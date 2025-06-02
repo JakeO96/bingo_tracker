@@ -3,19 +3,13 @@ import { BoardTile } from "./BoardTile"
 
 export const BingoBoard: React.FC<object> = () => {
 
-  let bingoBoard = []
-
-  for (let row_num = 0; row_num < 5; row_num++) {
-    let row = []
-    for (let col_num = 0; col_num < 5; col_num++) {
-      row.push(<BoardTile key={`${row_num}-${col_num}`} />)
-    }
-    bingoBoard.push(<div key={row_num} className="flex items-center"> {row} </div>)
-  }
-
   return ( 
-    <div>
-      { bingoBoard }
+    <div className="w-screen h-screen flex items-center justify-center bg-slate-100 p-2">
+      <div className="grid grid-cols-5 grid-rows-5 aspect-square w-[90vmin] max-w-full max-h-full">
+        {Array.from({ length: 25 }).map((_, i) => (
+          <BoardTile key={i} />
+        ))} 
+      </div>
     </div>
   )
 }
