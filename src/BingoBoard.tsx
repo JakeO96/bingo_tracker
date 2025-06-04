@@ -1,14 +1,21 @@
-/* eslint-disable prefer-const */
 import { BoardTile } from "./BoardTile"
 
-export const BingoBoard: React.FC<object> = () => {
+export type BoardTileData = {
+  tileHeader: string,
+  tileGoals: string[]
+}
+
+export const BingoBoard: React.FC<{allBoardTiles: Array<BoardTileData>}> = ({ allBoardTiles }) => {
+
 
   return ( 
-    <div className="w-screen h-screen flex items-center justify-center bg-slate-100 p-2">
-      <div className="grid grid-cols-5 grid-rows-5 aspect-square w-[90vmin] max-w-full max-h-full">
-        {Array.from({ length: 25 }).map((_, i) => (
-          <BoardTile key={i} />
-        ))} 
+    <div className="flex items-center justify-center p-2 bg-[#e8e8e8] shadow-inner rounded-md p-4">
+      <div className="grid grid-cols-5 grid-rows-5 aspect-auto w-[90vmin] max-w-full max-h-full">
+
+        {allBoardTiles.map((tile, index) => (
+          <BoardTile key={index} tileHeader={tile.tileHeader} tileGoals={tile.tileGoals} />
+        ))}
+
       </div>
     </div>
   )

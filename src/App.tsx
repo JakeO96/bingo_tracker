@@ -4,7 +4,9 @@ import { Outlet } from "react-router"
 function App() {
   return (
     <>
-      <Outlet />
+      <div className="bg-[#F5F5F5]">
+        <Outlet />
+      </div>
     </>
   )
 }
