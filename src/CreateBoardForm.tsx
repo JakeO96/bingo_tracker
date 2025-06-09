@@ -1,6 +1,8 @@
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import { PlainFormField } from './FormFields';
 import { BingoBoard, type BoardTileData } from "./BingoBoard";
+import { AuthContext } from "./AuthContext";
+import ExpressAPI from "./express-api"
 
 type InputObject = {
   name: string,
@@ -18,7 +20,9 @@ export const CreateBoardForm: React.FC<object> = () => {
   const [fields, setFields] = useState<Field>({ tileHeader: '', tileGoals: '' })
   const [bingoBoard, setBingoBoard] = useState<Array<BoardTileData>>([])
 
+  const { currentClientUsername } = useContext(AuthContext)
   const formInputStyles = 'p-1 bg-[#f5f5f5] inset-shadow-sm inset-shadow-gray-500 w-full focus:outline-1 focus:ring-0 focus:border-transparent'
+  const expressApi = new ExpressAPI()
 
   const onInputChange = ({ name, value }: InputObject): void => {
     setFields(prev => ({ ...prev, [name]: value }));
@@ -30,6 +34,12 @@ export const CreateBoardForm: React.FC<object> = () => {
     setBingoBoard([...bingoBoard, {'tileHeader': fields.tileHeader, 'tileGoals': goalList}])
     setFields({ tileHeader: '', tileGoals: '' })
   };
+
+  const onBoardFinish = async (evt: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+    evt.preventDefault()
+    console.log(`username: ${currentClientUsername}`)
+    expressApi.createBoard({ owner: currentClientUsername, board: bingoBoard })
+  }
 
   return (  
     <div className="grid grid-cols-2 w-screen h-screen">
@@ -74,7 +84,7 @@ export const CreateBoardForm: React.FC<object> = () => {
               </div>
               <div className="my-2 h-px w-full bg-gradient-to-r from-transparent via-[#0a0a0a] to-transparent" />
               <div className="flex justify-center">
-                <button type='submit' className="w-full whitespace-nowrap inline-flex items-center justify-center font-semibold ease-in duration-200 rounded-full outline outline-black-400 text-black-400 bg-[#f5f5f5] w-6/12 my-3 hover:bg-green-400 hover:text-white hover:outline-none cursor-pointer">
+                <button onClick={onBoardFinish} className="w-full whitespace-nowrap inline-flex items-center justify-center font-semibold ease-in duration-200 rounded-full outline outline-black-400 text-black-400 bg-[#f5f5f5] w-6/12 my-3 hover:bg-green-400 hover:text-white hover:outline-none cursor-pointer">
                   <p className="py-2">
                     Finish Board
                   </p>

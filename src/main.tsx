@@ -5,6 +5,12 @@ import './index.css'
 import App from './App.tsx'
 import HomePage from './HomePage.tsx'
 import CreateBoardPage from './CreateBoardPage.tsx'
+import { LogInPage } from './LogInPage.tsx'
+import { RegisterPage } from './RegisterPage.tsx'
+import ExpressAPI from './express-api'
+import { DashBoard } from './DashBoard.tsx'
+
+const expressApi: ExpressAPI = new ExpressAPI();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,7 +18,10 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />}> {/*wraps all the routes below it in a standard layout, top-level layout*/}
           <Route index element={<HomePage />} /> {/* index makes it so the "/" root path directs to the Home element*/}
-          <Route path="create-board" element={<CreateBoardPage />} />
+          <Route path="dashboard/create-board" element={<CreateBoardPage />} />
+          <Route path ="register" element={<RegisterPage expressApi={expressApi} />} />
+          <Route path="login" element={<LogInPage />} />
+          <Route path="dashboard" element={<DashBoard />} />
         </Route>
       </Routes>
     </BrowserRouter>
