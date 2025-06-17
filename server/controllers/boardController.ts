@@ -4,6 +4,10 @@ import asyncHandler from 'express-async-handler'
 import Board from '../models/boardModel'
 import User from '../models/userModel'
 import type { ActiveUser } from '../models/userModel'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv-safe';
+dotenv.config();
+
 
 interface RequestWithUser extends Request {
   user?: ActiveUser;
@@ -94,18 +98,10 @@ const deleteGame = asyncHandler( async (req: RequestWithUser, res: Response) => 
 //@route GET /api/game/create-game
 //@access private
 const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
-  console.log(req.body.username)
-  if(req.body.username) {
-    const userRecord = await User.findOne({username: req.body.username})
-    if (userRecord) {
-      Board.find({ ownerId: userRecord._id}).exec()
-      console.log('user Record:' + userRecord)
-      res.status(HttpStatusCode.SUCCESS).json(userRecord);
-    }
-    else {
-      res.status(HttpStatusCode.NOT_FOUND);
-      throw new Error("User not found");
-    }
+  console.log('request in allboards:')
+  if (req.user) {
+    const allUserOwnedBoards = await Board.find({ ownerId: req.user.id}).exec()
+    res.status(HttpStatusCode.SUCCESS).json(allUserOwnedBoards)
   }
 })
 

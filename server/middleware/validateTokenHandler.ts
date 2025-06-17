@@ -29,7 +29,7 @@ const validateToken = asyncHandler(async (req: RequestWithUser, res: Response, n
               throw new Error("Session has expired. Please log in again.");
             } else {
               res.status(HttpStatusCode.UNAUTHORIZED);
-              throw new Error("User not authorized from validateToken from validateToken");
+              throw new Error("User not authorized from validateToken");
             }
           }
           else {

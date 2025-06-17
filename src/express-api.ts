@@ -59,8 +59,8 @@ class ExpressAPI {
     return response
   }
 
-  getAllBoardsForUser = async (data: object): Promise<Response> => {
-    const response = await this.makeApiCall(fetchMethods.POST, '/board/getAllBoardsForUser', data)
+  getAllBoardsForUser = async (): Promise<Response> => {
+    const response = await this.makeApiCall(fetchMethods.GET, '/board/getAllBoardsForUser')
     return response
   }
 
