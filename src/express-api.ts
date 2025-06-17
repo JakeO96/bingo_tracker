@@ -8,7 +8,7 @@ const fetchMethods = {
   'DELETE': 'DELETE',
 }
 
-export default class ExpressAPI {
+class ExpressAPI {
 
   // Create a User
   createUser = async (data: object): Promise<Response> => {
@@ -44,27 +44,32 @@ export default class ExpressAPI {
   fieldExistsInDB = async (fieldName: string, value: string): Promise<RecordCheckResponse> => {
     const response: Response = await this.makeApiCall(fetchMethods.GET,`/user/exists/${fieldName}/${value}`);
     if (response.ok) {
-      const data: RecordCheckResponse = await response.json();
-      return data;
+      const data: RecordCheckResponse = await response.json()
+      return data
     } else {
       // Handle error appropriately
-      throw new Error('Server returned an error response');
+      throw new Error('Server returned an error response')
     }
   }
   
 
   // Create a new Bingo Board
   createBoard = async (data: object ): Promise<Response> => {
-    const response = await this.makeApiCall(fetchMethods.POST, '/board/create-board', data);
+    const response = await this.makeApiCall(fetchMethods.POST, '/board/create-board', data)
+    return response
+  }
+
+  getAllBoardsForUser = async (data: object): Promise<Response> => {
+    const response = await this.makeApiCall(fetchMethods.POST, '/board/getAllBoardsForUser', data)
     return response
   }
 
   // Fetch wrapper
   private makeApiCall = async (method: string, endpoint: string, data: unknown = {}): Promise<Response> => {
-    const url = `${SERVER_API_URL}${endpoint}`;
+    const url = `${SERVER_API_URL}${endpoint}`
     
     const headers: Headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+    headers.append('Content-Type', 'application/json')
 
     const requestOptions: RequestInit = {
       method,
@@ -72,10 +77,12 @@ export default class ExpressAPI {
       credentials: 'include', // Include http-only cookies
     };
     if (method === 'POST') {
-      requestOptions.body = JSON.stringify(data);
+      requestOptions.body = JSON.stringify(data)
     }
     
-    const response = await fetch(url, requestOptions);
-    return response;
+    const response = await fetch(url, requestOptions)
+    return response
   } 
 }
+
+export default new ExpressAPI()

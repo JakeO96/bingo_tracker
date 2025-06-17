@@ -1,5 +1,12 @@
 import express from "express";
-import { getAllUsers, fieldExists, updateUser, deleteUser, currentUser, getLoggedInUsers } from "../controllers/userController";
+import { 
+  getAllUsers, 
+  fieldExists, 
+  updateUser, 
+  deleteUser, 
+  currentUser, 
+  getLoggedInUsers,
+} from "../controllers/userController";
 //import { validateToken } from "../middleware/validateTokenHandler";
 
 const userRouter = express.Router();

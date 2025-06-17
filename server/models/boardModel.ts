@@ -1,18 +1,14 @@
-import mongoose, { Schema } from "mongoose";
-import { Document } from "mongoose";
+import mongoose, { Schema } from "mongoose"
+import { Document } from "mongoose"
+import { BoardTileData } from "../../shared/types/bingo"
 
-export interface IBoard extends Document {
-  ownerId: Schema.Types.ObjectId;
-  boardId: Schema.Types.ObjectId;
-  board: Tile[];
+export interface IBoardSchema extends Document {
+  ownerId: Schema.Types.ObjectId
+  boardId: Schema.Types.ObjectId
+  board: BoardTileData[]
 }
 
- type Tile = {
-  tileHeader: string;
-  tileGoals: string[];
-}
-
-const tileSchema = new Schema<Tile>(
+const tileSchema = new Schema<BoardTileData>(
   {
     tileHeader:       { type: String,  required: true },
     tileGoals:        { type: [String], required: true }
@@ -38,4 +34,4 @@ const boardSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model<IBoard>('Board', boardSchema, 'boards');
+export default mongoose.model<IBoardSchema>('Board', boardSchema, 'boards')

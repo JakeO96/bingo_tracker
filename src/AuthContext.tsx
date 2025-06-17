@@ -1,6 +1,6 @@
 /* eslint-disable no-constant-binary-expression */
 import { createContext, useState } from 'react';
-import ExpressAPI from './express-api';
+import expressApi from './express-api';
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -21,10 +21,9 @@ export const AuthContext = createContext<AuthContextType>({
 
 type AuthProviderProps = {
   children: React.ReactNode;
-  expressApi: ExpressAPI;
 };
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children, expressApi }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isUserLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(isUserLoggedIn);
   const [currentClientUsername, setCurrentClientUsername] = useState<string>('')

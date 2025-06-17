@@ -1,8 +1,6 @@
 import type React from "react"
 
-
 export const BoardTile: React.FC<{ tileHeader: string, tileGoals: string[] }> = ({ tileHeader, tileGoals }) => {
-
   return (
       <div className="flex flex-col items-center justify-center p-[1vw] text-[1.2vw] max-w-full max-h-full overflow-hidden">
         <div className="flex justify-center ">

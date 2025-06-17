@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react';
 import { Navigate, Link } from 'react-router';
 import { ValidateFormField, ServerConnectedFormField } from './FormFields';
 import { AuthContext } from './AuthContext';
-import ExpressAPI from './express-api';
+import expressApi from './express-api';
 
 type Fields = {
   username: string;
@@ -22,11 +22,7 @@ type InputObject = {
   error?: string,
 }
 
-interface RegisterFormProps {
-  expressApi: ExpressAPI;
-}
-
-export const RegisterForm: React.FC<RegisterFormProps> = ({ expressApi }) => {
+export const RegisterForm: React.FC<object> = () => {
   const [fields, setFields] = useState<Fields>({ username: '', password: '', email: '' });
   const [fieldErrors, setFieldErrors] = useState<Errors>({});
   const [_saveStatus, setSaveStatus] = useState<string>('READY');

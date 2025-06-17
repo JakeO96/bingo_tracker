@@ -1,9 +1,5 @@
+import type { BoardTileData } from "../../shared/types/bingo"
 import { BoardTile } from "./BoardTile"
-
-export type BoardTileData = {
-  tileHeader: string,
-  tileGoals: string[]
-}
 
 export const BingoBoard: React.FC<{allBoardTiles: Array<BoardTileData>}> = ({ allBoardTiles }) => {
 

@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import { PlainFormField } from './FormFields';
-import { BingoBoard, type BoardTileData } from "./BingoBoard";
-import { AuthContext } from "./AuthContext";
-import ExpressAPI from "./express-api"
+import { BingoBoard } from "./bingo/BingoBoard";
+import type { BoardTileData } from "../shared/types/bingo";
+import { AuthContext } from "./AuthContext"
+import expressApi from "./express-api";
 
 type InputObject = {
   name: string,
@@ -19,21 +20,28 @@ export const CreateBoardForm: React.FC<object> = () => {
 
   const [fields, setFields] = useState<Field>({ tileHeader: '', tileGoals: '' })
   const [bingoBoard, setBingoBoard] = useState<Array<BoardTileData>>([])
+  const [showWrongFieldEntryMessage, setShowWrongFieldEntryMessage] = useState<boolean>(false)
 
   const { currentClientUsername } = useContext(AuthContext)
   const formInputStyles = 'p-1 bg-[#f5f5f5] inset-shadow-sm inset-shadow-gray-500 w-full focus:outline-1 focus:ring-0 focus:border-transparent'
-  const expressApi = new ExpressAPI()
 
   const onInputChange = ({ name, value }: InputObject): void => {
     setFields(prev => ({ ...prev, [name]: value }));
   };
 
   const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    evt.preventDefault();
+    evt.preventDefault()
+    if (fields.tileHeader === '' || fields.tileGoals === '') {
+      setShowWrongFieldEntryMessage(true)
+      return
+    }
+    console.log(bingoBoard)
+
     const goalList = fields.tileGoals.split(',').map(goal => goal.trim())
     setBingoBoard([...bingoBoard, {'tileHeader': fields.tileHeader, 'tileGoals': goalList}])
     setFields({ tileHeader: '', tileGoals: '' })
-  };
+    setShowWrongFieldEntryMessage(false)
+  }
 
   const onBoardFinish = async (evt: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     evt.preventDefault()
@@ -75,6 +83,9 @@ export const CreateBoardForm: React.FC<object> = () => {
                   value={fields.tileGoals}
                   required={false}
               />
+              <div className={showWrongFieldEntryMessage ? 'flex text-red-600' : 'hidden'}>
+                <p>*Missing title or goals</p>
+              </div>
               <div className="flex justify-center">
                 <button type='submit' className="whitespace-nowrap inline-flex items-center justify-center font-semibold ease-in duration-200 rounded-full outline outline-black-400 text-black-400 bg-[#f5f5f5] w-6/12 my-3 hover:bg-green-400 hover:text-white hover:outline-none cursor-pointer">
                   <p className="py-2">

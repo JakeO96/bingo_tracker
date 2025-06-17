@@ -1,13 +1,13 @@
 import mongoose, { Schema } from "mongoose";
 import { Document } from "mongoose";
-import { IBoard } from './boardModel'
+import { IBoardSchema } from './boardModel'
 
 export interface IUser extends Document {
   email: string;
   username: string;
   password: string;
-  boardsOwned: Array<IBoard>;
-  boardsJoined: Array<IBoard>;
+  boardsOwned: Array<IBoardSchema>;
+  boardsJoined: Array<IBoardSchema>;
   refreshTokens: string[];
   invalidatedTokens: string[];
   session: {

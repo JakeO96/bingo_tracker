@@ -15,59 +15,34 @@ interface RequestWithUser extends Request {
 //@access private
 const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
   console.log("createGame in express-api firing")
-  console.log(req.body)
-  const boardData = req.body;
+  const boardData = req.body
+
   if ( !boardData.owner) {
     res.status(HttpStatusCode.VALIDATION_ERROR);
     throw new Error("Missing required fields");
   }
-
   const ownerRecord = await User.findOne({ username: boardData.owner });
     if (!ownerRecord) {
-      res.status(HttpStatusCode.VALIDATION_ERROR);
-      throw new Error("Some user does not exist");
+      res.status(HttpStatusCode.VALIDATION_ERROR)
+      throw new Error("Some user does not exist")
   }
-  console.log(`ownerRecord: ${ownerRecord} ------------------------`)
-  //console.log(`board data: ${boardData.board.json()}`)
 
-  const board = new Board
-({
+  const board = new Board ({
     ownerId: ownerRecord._id,
     board: boardData.board,
-  });
-  console.log(board)
-  console.log(Board.collection.name)
+  })
+
   try {
     console.log('save firing')
-    await board.save();       
-} catch (err) {
-  console.log('save error firing')
-  console.log(err)
-  return next(err);            // express-async-errors style
-}
-  const newBoard = await Board.findById(board._id)
-  console.log(newBoard)
-  await User.findByIdAndUpdate(ownerRecord._id, { $push: { boardsOwned: board._id } });
-  
-  res.status(HttpStatusCode.RECORD_CREATED).json({boardId: board._id});
-})
-
-//@desc Get all Board
-// records for a User
-//@route GET /api/game/create-game
-//@access private
-const getAllBoards = asyncHandler( async (req: RequestWithUser, res: Response) => {
-  if(req.user) {
-    const users = await Board
-  .find({player_id: req.user.id});
-    if (users) {
-      res.status(HttpStatusCode.SUCCESS).json(users);
-    }
-    else {
-      res.status(HttpStatusCode.NOT_FOUND);
-      throw new Error("User not found");
-    }
+    await board.save()    
+  } catch (err) {
+    console.log('save error firing')
+    console.log(err)
+    return next(err)
   }
+
+  await User.findByIdAndUpdate(ownerRecord._id, { $push: { boardsOwned: board._id } })
+  res.status(HttpStatusCode.RECORD_CREATED).json({boardId: board._id})
 })
 
 //@desc Get a single Board
@@ -114,4 +89,24 @@ const deleteGame = asyncHandler( async (req: RequestWithUser, res: Response) => 
 });
 */
 
-export { createBoard, getAllBoards, getBoard }
+//@desc Get all Board
+// records for a User
+//@route GET /api/game/create-game
+//@access private
+const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
+  console.log(req.body.username)
+  if(req.body.username) {
+    const userRecord = await User.findOne({username: req.body.username})
+    if (userRecord) {
+      Board.find({ ownerId: userRecord._id}).exec()
+      console.log('user Record:' + userRecord)
+      res.status(HttpStatusCode.SUCCESS).json(userRecord);
+    }
+    else {
+      res.status(HttpStatusCode.NOT_FOUND);
+      throw new Error("User not found");
+    }
+  }
+})
+
+export { createBoard, getBoard, getAllBoardsForUser }

@@ -1,12 +1,7 @@
 import { RegisterForm } from './RegisterForm';
-import ExpressAPI from './express-api';
 
-interface RegisterPageProps {
-  expressApi: ExpressAPI;
-}
-
-export const RegisterPage: React.FC<RegisterPageProps> = ({ expressApi }) => {
+export const RegisterPage: React.FC<object> = () => {
   return (
-    <RegisterForm expressApi={ expressApi } /> 
+    <RegisterForm /> 
   )
 };
