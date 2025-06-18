@@ -23,14 +23,20 @@ export const DashBoard: React.FC<object> = () => {
   }
 
   return ( 
-    <div className="flex flex-col items-center h-screen">
-      <button>
-        <Link to="create-board">Create New Board</Link>
-      </button>
-      <button onClick={onUserOwnedBoardsClick} className={allUserOwnedBoards ? "cursor-pointer" : "cursor-pointer"}>
-        See all your created boards
-      </button>
-      <Link to="/login"> Login </Link>
-    </div>
+    <>
+      <div className="flex flex-col items-center h-screen">
+        <button>
+          <Link to="create-board">Create New Board</Link>
+        </button>
+        <button onClick={onUserOwnedBoardsClick} className={allUserOwnedBoards ? "cursor-pointer" : "cursor-pointer"}>
+          See all your created boards
+        </button>
+        <Link to="/login"> Login </Link>
+      </div>
+      <div className={allUserOwnedBoards.length > 0 ? "h-screen bg-red-400" : "hidden"}>
+
+      </div>
+    </>
+
   )
 }
