@@ -50,13 +50,8 @@ export const CreateBoardForm: React.FC<object> = () => {
   }
 
   return (  
-    <div className="grid grid-cols-2 w-screen h-screen">
+    <div className="grid grid-cols-3 w-full h-full min-h-0 pr-20">
       <div>
-        <div className="flex justify-center mb-6 p-4">
-          <h1 className="font-bold text-3xl">
-            Add Your Bingo Tiles
-          </h1>
-        </div>
         <div className="flex justify-center">
           <form 
             onSubmit={onFormSubmit} 
@@ -105,12 +100,7 @@ export const CreateBoardForm: React.FC<object> = () => {
           </form>
         </div>
       </div>
-      <div className="overflow-auto bg-[#f2f2f2] inset-shadow-sm inset-shadow-black-500 p-4">
-        <div className="flex justify-center mb-6">
-          <h1 className="font-bold text-3xl">
-            Board Preview
-          </h1>
-        </div>
+      <div className="overflow-auto bg-[#f2f2f2] inset-shadow-sm inset-shadow-black-500 px-1 pt-2 w-full col-span-2">
         < BingoBoard allBoardTiles={bingoBoard}/>
       </div>
     </div>

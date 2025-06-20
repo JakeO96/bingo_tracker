@@ -8,6 +8,8 @@ import CreateBoardPage from './CreateBoardPage.tsx'
 import { LogInPage } from './LogInPage.tsx'
 import { RegisterPage } from './RegisterPage.tsx'
 import { DashBoard } from './DashBoard.tsx'
+import expressApi from './express-api.ts'
+import { CreatedBoards } from './CreatedBoards.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,6 +21,13 @@ createRoot(document.getElementById('root')!).render(
           <Route path ="register" element={<RegisterPage />} />
           <Route path="login" element={<LogInPage />} />
           <Route path="dashboard" element={<DashBoard />} />
+            <Route 
+              path="dashboard/created-boards" 
+              loader={async () => { 
+                return { records: await expressApi.getAllBoardsForUser() }
+              }} 
+              element={<CreatedBoards />}
+            />
         </Route>
       </Routes>
     </BrowserRouter>

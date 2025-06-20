@@ -116,7 +116,6 @@ export const LogInForm: React.FC<object> = () => {
         }
       </form>
       <div className="pt-1 text-noct-white">
-        New to us?
         <Link to='/create-account' className='transition-all ml-3  underline text-noct-teal hover:no-underline hover:text-noct-gray'>
           Create an Account
         </Link>
