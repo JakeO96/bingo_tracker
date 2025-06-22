@@ -46,7 +46,7 @@ export const CreateBoardForm: React.FC<object> = () => {
   const onBoardFinish = async (evt: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     evt.preventDefault()
     console.log(`username: ${currentClientUsername}`)
-    expressApi.createBoard({ owner: currentClientUsername, board: bingoBoard })
+    expressApi.createBoard({ board: bingoBoard })
   }
 
   return (  

@@ -21,32 +21,30 @@ const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, ne
   console.log("createGame in express-api firing")
   const boardData = req.body
 
-  if ( !boardData.owner) {
-    res.status(HttpStatusCode.VALIDATION_ERROR);
-    throw new Error("Missing required fields");
-  }
-  const ownerRecord = await User.findOne({ username: boardData.owner });
+  if (req.user) {
+    const ownerRecord = await User.findById(req.user.id );
     if (!ownerRecord) {
       res.status(HttpStatusCode.VALIDATION_ERROR)
       throw new Error("Some user does not exist")
+    }
+
+    const board = new Board ({
+      ownerId: ownerRecord._id,
+      board: boardData.board,
+    })
+
+    try {
+      console.log('save firing')
+      await board.save()    
+    } catch (err) {
+      console.log('save error firing')
+      console.log(err)
+      return next(err)
+    }
+
+    await User.findByIdAndUpdate(ownerRecord._id, { $push: { boardsOwned: board._id } })
+    res.status(HttpStatusCode.RECORD_CREATED).json({boardId: board._id})
   }
-
-  const board = new Board ({
-    ownerId: ownerRecord._id,
-    board: boardData.board,
-  })
-
-  try {
-    console.log('save firing')
-    await board.save()    
-  } catch (err) {
-    console.log('save error firing')
-    console.log(err)
-    return next(err)
-  }
-
-  await User.findByIdAndUpdate(ownerRecord._id, { $push: { boardsOwned: board._id } })
-  res.status(HttpStatusCode.RECORD_CREATED).json({boardId: board._id})
 })
 
 //@desc Get a single Board

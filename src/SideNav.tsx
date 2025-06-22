@@ -14,7 +14,7 @@ const links: RouteLink[] = [
     to:'/dashboard',
     children: [
       { label: 'Create Board', to:'dashboard/create-board' },
-      { label: 'Created', to: 'dashboard/created-boards' },
+      { label: 'Created', to: 'dashboard/boards-created' },
       { label: 'Moderator', to: 'dashboard/moderator' }
     ]
   },

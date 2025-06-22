@@ -1,12 +1,7 @@
 import mongoose, { Schema } from "mongoose"
 import { Document } from "mongoose"
-import { BoardTileData } from "../../shared/types/bingo"
+import { BoardTileData, IBoardSchema } from "../../shared/types/bingo"
 
-export interface IBoardSchema extends Document {
-  ownerId: Schema.Types.ObjectId
-  boardId: Schema.Types.ObjectId
-  board: BoardTileData[]
-}
 
 const tileSchema = new Schema<BoardTileData>(
   {

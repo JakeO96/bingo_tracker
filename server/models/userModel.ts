@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { Document } from "mongoose";
-import { IBoardSchema } from './boardModel'
+import { IBoardSchema } from "../../shared/types/bingo";
 
 export interface IUser extends Document {
   email: string;

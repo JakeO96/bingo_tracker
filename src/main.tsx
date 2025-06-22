@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import './index.css'
 import App from './App.tsx'
 import HomePage from './HomePage.tsx'
@@ -11,25 +11,42 @@ import { DashBoard } from './DashBoard.tsx'
 import expressApi from './express-api.ts'
 import { CreatedBoards } from './CreatedBoards.tsx'
 
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <App />,
+      children: [
+        { index: true, element: <HomePage /> },
+        { path: "register", element: <RegisterPage /> },
+        { path: "login", element: <LogInPage /> },
+        { 
+          path: "dashboard", 
+          element: <DashBoard />,
+          children: [
+            { path: "create-board", element: <CreateBoardPage /> },
+            {
+              path: "boards-created", 
+              loader: async () => { 
+                        const records = await expressApi.getAllBoardsForUser()
+                          .then(response => response.json())
+                          .then(boards => {
+                            return { records: boards}
+                          })
+                        return {records: records}   
+                      },
+              element: <CreatedBoards />,
+            }
+          ]
+        },
+      ]
+    }
+  ]
+)
+
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}> {/*wraps all the routes below it in a standard layout, top-level layout*/}
-          <Route index element={<HomePage />} /> {/* index makes it so the "/" root path directs to the Home element*/}
-          <Route path="dashboard/create-board" element={<CreateBoardPage />} />
-          <Route path ="register" element={<RegisterPage />} />
-          <Route path="login" element={<LogInPage />} />
-          <Route path="dashboard" element={<DashBoard />} />
-            <Route 
-              path="dashboard/created-boards" 
-              loader={async () => { 
-                return { records: await expressApi.getAllBoardsForUser() }
-              }} 
-              element={<CreatedBoards />}
-            />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </StrictMode>,
 )
