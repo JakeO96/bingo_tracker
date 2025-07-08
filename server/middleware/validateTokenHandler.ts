@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { Request, Response, NextFunction } from 'express';
 import { HttpStatusCode } from '../constants'
 import asyncHandler from 'express-async-handler'
@@ -51,6 +52,7 @@ const validateToken = asyncHandler(async (req: RequestWithUser, res: Response, n
         throw new Error("There was a problem processing your request");
       }
     } catch (error) {
+      console.log(error)
       res.status(HttpStatusCode.UNAUTHORIZED);
       throw new Error("User not authorized");
     }

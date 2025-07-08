@@ -76,7 +76,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       );
 
       // Store the refresh token in the database
-      user.refreshTokens.push(refreshToken);
+      user.refreshTokens.push(refreshToken)
       user.session = {
         sessionId,
         current: true,
@@ -85,20 +85,25 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       };
       await user.save();
 
-      // Set the JWT and refresh token in HttpOnly cookies
-      res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true});
-      res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: "none", secure: true});
+      //const ONE_YEAR = 1000 /*ms*/ * 60 /*sec*/ * 60 /*min*/ * 24 /*hr*/ * 365 /*days*/
+      const ONE_MINUTE = 60 * 1_000 //for testing
+      //const TWO_HOURS = 2 * 60 * 60 * 1_000
+      const ONE_WEEK = 7 * 24 * 60 * 60 * 1_000
 
-      res.status(HttpStatusCode.SUCCESS).json({success: true, username: user.username});
+      // Set the JWT and refresh token in HttpOnly cookies
+      res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: ONE_MINUTE})
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: "none", secure: true, maxAge: ONE_WEEK})
+
+      res.status(HttpStatusCode.SUCCESS).json({success: true, username: user.username})
     }
     else {
-      res.status(HttpStatusCode.SERVER_ERROR);
-      throw new Error("There was a problem processing your request");
+      res.status(HttpStatusCode.SERVER_ERROR)
+      throw new Error("There was a problem processing your request")
     }
   }
   else {
-    res.status(HttpStatusCode.UNAUTHORIZED);
-    throw new Error("Invalid credentials");
+    res.status(HttpStatusCode.UNAUTHORIZED)
+    throw new Error("Invalid credentials")
   }
 });
 
@@ -106,29 +111,29 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 //@route POST /api/auth/logout
 //@access public
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  const token: string = req.cookies.refreshToken;
+  const token: string = req.cookies.refreshToken
   
   // Get the user from the database
-  const user = await User.findOne({ 'refreshTokens': token });
+  const user = await User.findOne({ 'refreshTokens': token })
   console.log(`in authCOntroller logout function the user fetched from DB is ${user}`)
 
   if(user) {
     // Add the token to the invalidatedTokens array in the database
-    user.invalidatedTokens.push(token);
+    user.invalidatedTokens.push(token)
     // Remove the token from the refreshTokens array in the database
-    user.refreshTokens = user.refreshTokens.filter(rt => rt !== token);
+    user.refreshTokens = user.refreshTokens.filter(rt => rt !== token)
     user.session.endTime = new Date();
-    await user.save();
+    await user.save()
 
     // Clear the token from the cookie
-    res.clearCookie('token');
-    res.clearCookie('refreshToken');
+    res.clearCookie('token')
+    res.clearCookie('refreshToken')
     
-    res.status(HttpStatusCode.SUCCESS).json({ success: true });
+    res.status(HttpStatusCode.SUCCESS).json({ success: true })
   }
   else {
-    res.status(HttpStatusCode.UNAUTHORIZED);
-    throw new Error("User not authorized");
+    res.status(HttpStatusCode.UNAUTHORIZED)
+    throw new Error("User not authorized")
   }
 });
 
@@ -139,6 +144,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   const refreshSecret = process.env.JWT_REFRESH_SECRET;
   if(refreshSecret && refreshToken) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jwt.verify(refreshToken, refreshSecret, async (err: Error | null, decoded: any) => {
       if(err) {
         res.status(HttpStatusCode.UNAUTHORIZED);
@@ -160,7 +166,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
                 },
               }, 
               secret,
-              {expiresIn: "15m"}
+              {expiresIn: "2hr"}
             );
             
             // Generate a new refresh token
@@ -175,8 +181,10 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
             );
             
             // Replace the old refresh token with the new one in the database
-            user.refreshTokens = user.refreshTokens.map(rt => rt === refreshToken ? newRefreshToken : rt);
-            await user.save();
+            user.refreshTokens = user.refreshTokens.map( rt => 
+              rt === refreshToken ? newRefreshToken : rt
+            )
+            await user.save()
             
             // Set the JWT and refresh token in HttpOnly cookies
             res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true});
