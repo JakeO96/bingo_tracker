@@ -84,7 +84,7 @@ class ExpressAPI {
     if(response.status === 401) {
       const errorData = await response.json();
       if(errorData.message === 'Session has expired. Please log in again.') {
-        const refreshResponse = await fetch(`${SERVER_API_URL}/api/auth/refresh`, { method: 'POST', credentials: 'include' });
+        const refreshResponse = await fetch(`${SERVER_API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' });
         if (!refreshResponse.ok) {
           throw new Error('Unable to refresh tokens');
         }

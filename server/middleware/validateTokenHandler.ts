@@ -2,64 +2,67 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpStatusCode } from '../constants'
 import asyncHandler from 'express-async-handler'
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import User from '../models/userModel'
 
 interface RequestWithUser extends Request {
   user?: string | object;
 }
 
-const extractToken = (req: RequestWithUser): string | undefined => {
-  let token: string | undefined = req.cookies.token;
+const validateTokenCallback = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+  const token = req.cookies.token
   if (!token) {
-    return undefined;
+    res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized '})
+    return
   }
-  return token;
+
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    res.status(HttpStatusCode.SERVER_ERROR).json({ message: 'Server misconfiguration'})
+    return
+  }
+
+  try {
+    const decoded = await new Promise<JwtPayload>((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      jwt.verify(token, secret, (err: any, payload: any) => {
+        if (err) {
+          return reject(err)
+        }
+        resolve(payload as JwtPayload)
+      })
+    })
+    console.log(`decoded payload validateToken --- ${decoded}`)
+    console.log(`User on 'decoded' decoded.user --- ${decoded.user}`)
+    req.user = decoded.user
+    const sessionId = decoded.user.sessionId
+    const user = await User.findById(decoded.user.id)
+    console.log(`User from MongoDb using decoded.user.id in validateToken--- ${user}`)
+    console.log(`SessionId from decoded.user.sessionId--- ${sessionId}`)
+    console.log(`endTime from decoded.user.session.endTime--- ${user!.session.endTime}`)
+    console.log(`User session from user.session.sessionId --- ${user!.session.sessionId}`)
+
+    if (user && 
+        user.session.sessionId === sessionId &&
+        user.session.endTime === null
+    ) {
+      next()
+      return
+    }
+
+    res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Invalid session from validateToken' })
+    return
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    if (err instanceof TokenExpiredError) {
+      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Session has expired. Please log in again.'})
+      return
+    }
+    res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized from validateToken' })
+    return
+  }
 }
 
-const validateToken = asyncHandler(async (req: RequestWithUser, res: Response, next: NextFunction) => {
-  let token: string | undefined = extractToken(req);
-  if (token) {
-    try {
-      const secret = process.env.JWT_SECRET;
-      if(secret){
-        jwt.verify(token, secret, async (err, decoded) => {     
-          if(err) {
-            if(err instanceof jwt.TokenExpiredError) {
-              res.status(HttpStatusCode.UNAUTHORIZED);
-              throw new Error("Session has expired. Please log in again.");
-            } else {
-              res.status(HttpStatusCode.UNAUTHORIZED);
-              throw new Error("User not authorized from validateToken");
-            }
-          }
-          else {
-            const decodedToken = decoded as JwtPayload;
-            req.user = decodedToken.user;
-            const sessionId = decodedToken.user.sessionId;
-            const user = await User.findById(decodedToken.user.id);
-            if (user && user.session.sessionId === sessionId && user.session.endTime === null) {
-              next();
-            } else {
-              res.status(HttpStatusCode.UNAUTHORIZED);
-              throw new Error("Invalid session from validateToken");
-            }
-          }
-        })
-      }
-      else {
-        res.status(HttpStatusCode.SERVER_ERROR);
-        throw new Error("There was a problem processing your request");
-      }
-    } catch (error) {
-      console.log(error)
-      res.status(HttpStatusCode.UNAUTHORIZED);
-      throw new Error("User not authorized");
-    }
-  } else {
-    res.status(HttpStatusCode.UNAUTHORIZED);
-    throw new Error("User not authorized");
-  }
-})
+const validateToken = asyncHandler(validateTokenCallback)
 
 export { validateToken }
