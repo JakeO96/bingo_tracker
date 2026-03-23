@@ -14,15 +14,15 @@ const links: RouteLink[] = [
     to:'/dashboard',
     children: [
       { label: 'Create Board', to:'dashboard/create-board' },
-      { label: 'Created', to: 'dashboard/boards-created' },
-      { label: 'Moderator', to: 'dashboard/moderator' }
+      { label: 'Boards', to: 'dashboard/boards-created' },
+      { label: 'Create Event', to:'/create-event' },
+      { label: 'My Events', to:'active-games/my-events' }
     ]
   },
   {
-    label: 'Active Games', 
-    to:'/active-games',
+    label: 'Active Events', 
+    to:'/active-events',
     children: [
-      { label: 'My Games', to:'active-games/my-games' },
       { 
         label: 'Browse', 
         to: 'active-games/browse',
@@ -30,7 +30,7 @@ const links: RouteLink[] = [
           { label: 'Popular', to: 'active-games/browse/popular' },
           { label: 'Recent', to: 'active-games/browse/recent'}
         ] 
-      },
+      }
     ]
   }
 ]

@@ -5,8 +5,12 @@ import type { Schema } from "mongoose";
   tileGoals: string[];
 }
 
+export type BingoBoard = BoardTileData[]
+
 export interface IBoardSchema extends Document {
+  boardTitle: string;
   ownerId: Schema.Types.ObjectId
   boardId: Schema.Types.ObjectId
+  title: string
   board: BoardTileData[]
 }

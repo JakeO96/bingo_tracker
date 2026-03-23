@@ -4,6 +4,7 @@ type PlainFormFieldOnChange = (obj: { name: string, value: string }) => void;
 type ValidateFormFieldOnChange = (obj: { name: string, value: string, error: string | undefined }) => void;
 
 type PlainFormFieldProps = {
+  
   placeholder?: string;
   name: string;
   type: string;

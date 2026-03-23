@@ -15,13 +15,11 @@ const validateTokenCallback = async (req: RequestWithUser, res: Response, next: 
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized '})
     return
   }
-
   const secret = process.env.JWT_SECRET
   if (!secret) {
     res.status(HttpStatusCode.SERVER_ERROR).json({ message: 'Server misconfiguration'})
     return
   }
-
   try {
     const decoded = await new Promise<JwtPayload>((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,16 +30,9 @@ const validateTokenCallback = async (req: RequestWithUser, res: Response, next: 
         resolve(payload as JwtPayload)
       })
     })
-    console.log(`decoded payload validateToken --- ${decoded}`)
-    console.log(`User on 'decoded' decoded.user --- ${decoded.user}`)
     req.user = decoded.user
     const sessionId = decoded.user.sessionId
     const user = await User.findById(decoded.user.id)
-    console.log(`User from MongoDb using decoded.user.id in validateToken--- ${user}`)
-    console.log(`SessionId from decoded.user.sessionId--- ${sessionId}`)
-    console.log(`endTime from decoded.user.session.endTime--- ${user!.session.endTime}`)
-    console.log(`User session from user.session.sessionId --- ${user!.session.sessionId}`)
-
     if (user && 
         user.session.sessionId === sessionId &&
         user.session.endTime === null
@@ -49,7 +40,6 @@ const validateTokenCallback = async (req: RequestWithUser, res: Response, next: 
       next()
       return
     }
-
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Invalid session from validateToken' })
     return
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

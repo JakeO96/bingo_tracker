@@ -95,7 +95,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: TWO_HOURS})
       res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: "none", secure: true, maxAge: ONE_WEEK})
 
-      res.status(HttpStatusCode.SUCCESS).json({success: true, username: user.username})
+      res.status(HttpStatusCode.SUCCESS).json({username: user.username})
     }
     else {
       res.status(HttpStatusCode.SERVER_ERROR)
@@ -130,7 +130,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('token')
     res.clearCookie('refreshToken')
     
-    res.status(HttpStatusCode.SUCCESS).json({ success: true })
+    res.status(HttpStatusCode.SUCCESS)
   }
   else {
     res.status(HttpStatusCode.UNAUTHORIZED)
@@ -148,7 +148,6 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized'})
     return
   }
-
   try {
     const decoded = await new Promise<JwtPayload>((resolve, reject) => {
       jwt.verify(refreshToken, refreshSecret, (err: any, payload: any) => {
@@ -158,7 +157,6 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
         resolve(payload as JwtPayload)
       })
     })
-
     const secret = process.env.JWT_SECRET
     if (!secret) {
       res.status(HttpStatusCode.SERVER_ERROR).json({ message: 'There was a problem processing your request'})
@@ -180,8 +178,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
       }, 
       secret,
       {expiresIn: "20m"}
-    );
-    
+    );    
     // Generate a new refresh token
     const newRefreshToken = jwt.sign(
       {
@@ -192,12 +189,11 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
       refreshSecret,
       {expiresIn: "6d"}
     );
-
     user.refreshTokens = user.refreshTokens.map( rt =>
       rt === refreshToken ? newRefreshToken : rt
     )
     await user.save()
-
+    console.log('accessToken refreshed')
     // Set the JWT and refresh token in HttpOnly cookies then success
     res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true});
     res.cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite:  "none", secure: true});   

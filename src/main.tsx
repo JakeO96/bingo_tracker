@@ -29,7 +29,6 @@ const router = createBrowserRouter(
               path: "boards-created", 
               loader: async () => { 
                         const records = await expressApi.getAllBoardsForUser()
-                          .then(response => response.json())
                           .then(boards => {
                             return { records: boards}
                           })

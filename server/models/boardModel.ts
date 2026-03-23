@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose"
-import { Document } from "mongoose"
 import { BoardTileData, IBoardSchema } from "../../shared/types/bingo"
 
 
@@ -18,6 +17,10 @@ const boardSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: [true],
       ref: "User",
+    },
+    title: {
+      type: mongoose.Schema.Types.String,
+      required: [true],
     },
     board: {
       type: [tileSchema],

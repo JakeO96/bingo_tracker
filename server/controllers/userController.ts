@@ -4,7 +4,7 @@ import asyncHandler from 'express-async-handler';
 import User from "../models/userModel";
 import bcrypt from 'bcrypt';
 import type { ActiveUser } from '../models/userModel';
-import mongoose from 'mongoose';
+//import mongoose from 'mongoose';
 
 interface RequestWithUser extends Request {
   user?: ActiveUser;

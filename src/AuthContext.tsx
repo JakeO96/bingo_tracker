@@ -30,10 +30,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logIn = async (fields: { email: string; password: string }) => {
     try {
-      const res = await expressApi.logUserIn(fields);
-      const data = await res.json();
+      const data = await expressApi.logUserIn(fields);
 
-      if (data.success) {
+      if (data.username) {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('username', data.username);
         setCurrentClientUsername(data.username);
@@ -48,16 +47,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logOut = async () => {
     try {
-      const res = await expressApi.logUserOut();
-      const data = await res.json();
-
-      if (data.success) {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('username');
-        setCurrentClientUsername('');
-        setIsLoggedIn(false);
-        return true;
-      }
+      await expressApi.logUserOut();
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('username');
+      setCurrentClientUsername('');
+      setIsLoggedIn(false);
+      return true;
     } catch (err) {
       console.error(err)
       return false;
@@ -67,13 +62,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (fields: { email: string; username: string; password: string }) => {
     try {
       const res = await expressApi.createUser(fields);
-      const data = await res.json();
-
-      console.log(data);
-
-      if (data.success) {
-        return true;
-      }
+      console.log(res);
+      return true;
     } catch (err) {
       console.error(err);
       return false;

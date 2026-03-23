@@ -4,7 +4,7 @@ import asyncHandler from 'express-async-handler'
 import Board from '../models/boardModel'
 import User from '../models/userModel'
 import type { ActiveUser } from '../models/userModel'
-import jwt from 'jsonwebtoken'
+//import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv-safe';
 dotenv.config();
 
@@ -18,26 +18,24 @@ interface RequestWithUser extends Request {
 //@route POST /api/game/create-game
 //@access private
 const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
-  console.log("createGame in express-api firing")
   const boardData = req.body
-
+  console.log(boardData.title + '``````````````````````````````````````````````````````')
   if (req.user) {
     const ownerRecord = await User.findById(req.user.id );
     if (!ownerRecord) {
       res.status(HttpStatusCode.VALIDATION_ERROR)
       throw new Error("Some user does not exist")
     }
-
     const board = new Board ({
       ownerId: ownerRecord._id,
+      title: boardData.title,
       board: boardData.board,
     })
 
     try {
-      console.log('save firing')
+      console.log('new board created')
       await board.save()    
     } catch (err) {
-      console.log('save error firing')
       console.log(err)
       return next(err)
     }
@@ -96,7 +94,6 @@ const deleteGame = asyncHandler( async (req: RequestWithUser, res: Response) => 
 //@route GET /api/game/create-game
 //@access private
 const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
-  console.log('request in allboards:')
   if (req.user) {
     const allUserOwnedBoards = await Board.find({ ownerId: req.user.id}).exec()
     res.status(HttpStatusCode.SUCCESS).json(allUserOwnedBoards)
