@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 
-type PlainFormFieldOnChange = (obj: { name: string, value: string }) => void;
+export type PlainFormFieldOnChange = (obj: { name: string, value: string }) => void;
 type ValidateFormFieldOnChange = (obj: { name: string, value: string, error: string | undefined }) => void;
 
 type PlainFormFieldProps = {
@@ -10,42 +10,54 @@ type PlainFormFieldProps = {
   type: string;
   value: string;
   onChange: PlainFormFieldOnChange
-  styles: string;
-  required: boolean;
+  styles?: string;
+  required?: boolean;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 };
 
 export interface RecordCheckResponse extends Response {
   exists: boolean;
 }
 
-const PlainFormField: React.FC<PlainFormFieldProps> = ({ 
-  placeholder, 
-  name, 
-  type, 
-  value: propsValue, 
-  onChange, 
-  styles, 
-  required,
-}) => {
-  const { value, handleChange } = useFormField(propsValue, onChange);
+const PlainFormField = forwardRef<HTMLInputElement, PlainFormFieldProps>( 
+  (
+    { 
+      placeholder, 
+      name, 
+      type, 
+      value: propsValue, 
+      onChange, 
+      styles, 
+      required,
+      onBlur,
+      onKeyDown
+    },
+    ref
+  ) => {
+    const { value, handleChange } = useFormField(propsValue, onChange);
 
-  return (
-    <div className="w-full">
-      <div className="flex">
-        <input
-          type={type}
-          name={name}
-          placeholder={placeholder || ''}
-          value={value}
-          onChange={handleChange}
-          className={styles}
-          onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.placeholder = ""}
-        />
-        {required ? <span className='text-noct-orange text-2xl pl-1'>*</span> : <div className='ml-2 pl-1'></div>}
+    return (
+      <div className="w-full">
+        <div className="flex">
+          <input
+            ref={ref}
+            type={type}
+            name={name}
+            placeholder={placeholder || ''}
+            value={value}
+            onChange={handleChange}
+            className={styles}
+            onBlur={onBlur}
+            onKeyDown={onKeyDown}
+
+          />
+          {required ? <span className='text-noct-orange text-2xl pl-1'>*</span> : <div className='ml-2 pl-1'></div>}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+)
 
 // ### Check input with a validate function
 type ValidateFormFieldProps = {

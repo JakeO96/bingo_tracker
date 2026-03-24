@@ -8,8 +8,8 @@ type BoardTitleEditorProps =  {
 
 export default function BoardTitleEditor({
   title,
-  onSave
-}): BoardTitleEditorProps {
+  onSave,
+}: BoardTitleEditorProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [draftTitle, setDraftTitle] = useState(title)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -32,24 +32,26 @@ export default function BoardTitleEditor({
     setIsEditing(true)
   }
 
-  const handleSave = () => {
-    const trimmed = draftTitle.trim()
-    onSave(trimmed)
+  const handleFinishEditing = () => {
+    const trimmedTitle = draftTitle.trim()
+    onSave(trimmedTitle)
     setIsEditing(false)
   }
 
-  const handleCancel = () => {
+  const handleCancelEditing = () => {
     setDraftTitle(title)
     setIsEditing(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSave()
+      e.preventDefault()
+      handleFinishEditing()
     }
 
     if (e.key === "Escape") {
-      handleCancel()
+      e.preventDefault()
+      handleCancelEditing()
     }
   }
 
@@ -58,13 +60,26 @@ export default function BoardTitleEditor({
       <PlainFormField
         ref={inputRef}
         type={'text'}
+        name={'board title'}
+        placeholder="Untitled Board"
+        styles="bg-transparent text-center text-2xl font-bold outline-none border-b border-gray-400 px-2"
         value={draftTitle}
-        onChange={(e) => setDraftTitle(e.target.value)}
+        required={false}
+        onChange={({ value }) => setDraftTitle(value)}
+        onBlur={handleFinishEditing}
         onKeyDown={handleKeyDown}
-        placeholder="Add Board Title"
-        
       />
     )
   }
+
+  return (
+    <button 
+      type="button"
+      onClick={handleStartEditing}
+      className="bg-transparent border-none text-2xl font-bold px-2 hover:cursor-pointer"
+    >
+      {title.trim() || "Untitled Board"}
+    </button>
+  )
 
 }

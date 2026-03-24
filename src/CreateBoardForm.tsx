@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
 import { PlainFormField } from './FormFields';
 import { BingoBoard } from "./bingo/BingoBoard";
-import type { BoardTileData } from "../shared/types/bingo";
+import type { BoardData, BoardTileData, GoalData, TileData } from "../shared/types/bingo";
 import { AuthContext } from "./AuthContext"
 import expressApi from "./express-api";
 import { useNavigate } from "react-router";
+import BoardTitleEditor from "./BoardTitleEditor";
 
 type InputObject = {
   name: string,
@@ -18,10 +19,35 @@ type Field = {
   tileGoals: string;
 }
 
+const createEmptyGoal = (): GoalData => {
+  return {
+    id: crypto.randomUUID(),
+    text: "",
+    points: 0
+  }
+}
+
+const createEmptyTile = (goalCount: number): TileData => {
+  return {
+    id: crypto.randomUUID(),
+    title: "",
+    goals: Array.from({ length: goalCount }, createEmptyGoal)
+  }
+}
+
+const createInitialBoardTiles = (numberOfTiles: number, goalsPerTile: number): Array<TileData> => {
+  return Array.from({ length: numberOfTiles }, () => createEmptyTile(goalsPerTile))
+}
+
 export const CreateBoardForm: React.FC<object> = () => {
 
   const [fields, setFields] = useState<Field>({ boardTitle: '', tileHeader: '', tileGoals: '' })
-  const [bingoBoard, setBingoBoard] = useState<Array<BoardTileData>>([])
+  const [boardDraft, setBoardDraft] = useState<BoardData>(
+    {
+      title: "Untitled Board",
+      tiles: createInitialBoardTiles(25, 3)
+    }
+  )
   const [showWrongFieldEntryMessage, setShowWrongFieldEntryMessage] = useState<boolean>(false)
 
 
@@ -39,10 +65,10 @@ export const CreateBoardForm: React.FC<object> = () => {
       setShowWrongFieldEntryMessage(true)
       return
     }
-    console.log(bingoBoard)
+    console.log(boardDraft)
 
     const goalList = fields.tileGoals.split(',').map(goal => goal.trim())
-    setBingoBoard([...bingoBoard, {'tileHeader': fields.tileHeader, 'tileGoals': goalList}])
+    setBoardDraft([...boardDraft, {'tileHeader': fields.tileHeader, 'tileGoals': goalList}])
     setFields({ ...fields, tileHeader: '', tileGoals: '' })
     setShowWrongFieldEntryMessage(false)
   }
@@ -53,7 +79,7 @@ export const CreateBoardForm: React.FC<object> = () => {
       console.log(`username: ${currentClientUsername}`)
       console.log(fields.boardTitle)
       await expressApi.createBoard({ 
-        board: bingoBoard, 
+        board: boardDraft, 
         title: fields.boardTitle 
       })
 
@@ -66,15 +92,11 @@ export const CreateBoardForm: React.FC<object> = () => {
   return (
     <>
     <div className="flex flex-col items-center ">
-      <h1>Board Title</h1>
-      <PlainFormField
-        type={'text'}
-        name={'boardTitle'}
-        placeholder={'Board Title'}
-        styles={`input[type='text'] ${formInputStyles}`}
-        onChange={onInputChange}
-        value={fields.tileHeader}
-        required={true}
+      <BoardTitleEditor 
+        title={fields.boardTitle}
+        onSave={(nextTitle) =>
+          setFields((prev) => ({...prev, boardTitle: nextTitle }))
+        }
       />
 
     </div>
@@ -129,7 +151,7 @@ export const CreateBoardForm: React.FC<object> = () => {
         </div>
       </div>
       <div className="overflow-auto bg-[#f2f2f2] inset-shadow-sm inset-shadow-black-500 px-1 pt-2 w-full col-span-2">
-        < BingoBoard allBoardTiles={bingoBoard}/>
+        < BingoBoard allBoardTiles={boardDraft}/>
       </div>
     </div>
     </>
