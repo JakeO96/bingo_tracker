@@ -165,7 +165,7 @@ export default function TileEditorModal({
                 hover:bg-red-400 hover:text-white hover:border-red-400 
                 focus:outline-none focus:ring-2 focus:ring-red-200 active:scale-[0.98]'
               >
-                  Cancel
+                Cancel
               </button>
               <button 
                 type='submit' 
@@ -173,9 +173,7 @@ export default function TileEditorModal({
                 px-6 text-sm font-semibold text-white transition duration-200 hover:cursor-pointer 
                 hover:brightness-120 focus:outline-none focus:ring-2 focus:ring-emerald-200 active:scale-[0.98]"
               >
-                <p className="py-1 text-black-400">
-                  Save Tile
-                </p>
+                Save Tile
               </button>
             </div>
           </div>

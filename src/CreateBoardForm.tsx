@@ -61,20 +61,19 @@ export const CreateBoardForm: React.FC<object> = () => {
           <button
             type="button"
             className='inline-flex h-11 items-center justify-center whitespace-nowrap rounded-full border 
-            border-red-300 bg-white px-6 text-sm font-semibold text-red-400 transition duration-200 hover:cursor-pointer 
-            hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-200 active:scale-[0.98]'
+                border-gray-600 bg-white px-6 text-sm font-semibold text-black transition duration-200 hover:cursor-pointer 
+                hover:bg-red-400 hover:text-white hover:border-red-400 
+                focus:outline-none focus:ring-2 focus:ring-red-200 active:scale-[0.98]'
           >
-              Cancel
+            Cancel
           </button>
           <button 
             type='button' 
             className="w-1/3 inline-flex h-11 items-center justify-center whitespace-nowrap rounded-full bg-emerald-500 
             px-6 text-sm font-semibold text-white transition duration-200 hover:cursor-pointer 
-            hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200 active:scale-[0.98]"
+            hover:brightness-120 focus:outline-none focus:ring-2 focus:ring-emerald-200 active:scale-[0.98]"
           >
-            <p className="py-1 text-black-400">
-              Save Board
-            </p>
+            Save Board
           </button>
         </div>
       </div>

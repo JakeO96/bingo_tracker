@@ -33,11 +33,15 @@ export  const BoardTile: React.FC<BoardTileProps> = ({ title, goals, onAddTileCl
           </h3> 
           <div className="min-h-0 flex flex-1 flex-col justify-start">
             {goals.map((goal, index) => (
-              <div key={goal.id ?? index}>
-                <p className="truncate text-left text-[11px] leading-tight text-slate-600">
-                  {goal.text}
-                </p>
-
+              <div key={goal.id ?? index} className="min-h-0">
+                <div className="min-h-0 grid grid-cols-[1fr_auto] items-end">
+                  <p className="min-w-0 truncate text-[11px] leading-tight text-slate-600 h-[14px]">
+                    {goal.text}
+                  </p>
+                  <p className="text-[10px] leading-tight tracking-tight text-slate-500 whitespace-nowrap">
+                    {goal.points}
+                  </p>
+                </div>
                 {index < goals.length - 1 && (
                   <div className="my-0.5 h-px w-full bg-gradient-to-r from-slate-300 via-slate-200 to-transparent" />
                 )}
