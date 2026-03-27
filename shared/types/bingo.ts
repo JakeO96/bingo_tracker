@@ -18,9 +18,9 @@ export type BoardData = {
 }
 
 export interface IBoardSchema extends Document {
-  boardTitle: string;
-  ownerId: Schema.Types.ObjectId
-  boardId: Schema.Types.ObjectId
-  title: string
-  board: TileData[]
+  ownerId: Schema.Types.ObjectId;
+  title: string;
+  tiles: TileData[];
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -7,7 +7,7 @@ type PlainFormFieldProps = {
   
   placeholder?: string;
   name: string;
-  type: string;
+  type: React.HTMLInputTypeAttribute;
   value: string;
   onChange: PlainFormFieldOnChange
   styles?: string;

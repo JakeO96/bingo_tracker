@@ -76,7 +76,7 @@ export default function BoardTitleEditor({
     <button 
       type="button"
       onClick={handleStartEditing}
-      className="bg-transparent border-none text-2xl font-bold px-2 hover:cursor-pointer"
+      className="inline-flex items-center justify-center bg-transparent border-none text-2xl font-bold px-2 hover:cursor-pointer"
     >
       {title.trim() || "Untitled Board"}
     </button>

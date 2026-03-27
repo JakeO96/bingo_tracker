@@ -1,15 +1,19 @@
-import type { BoardTileData } from "../../shared/types/bingo"
+import type { TileData } from "../../shared/types/bingo"
 import { BoardTile } from "./BoardTile"
 
-export const BingoBoard: React.FC<{allBoardTiles: Array<BoardTileData>}> = ({ allBoardTiles }) => {
+type BingoBoardProps = {
+  allBoardTiles: Array<TileData>;
+  onAddTileClick: (index: number) => void
+}
 
+export const BingoBoard: React.FC<BingoBoardProps> = ({ allBoardTiles, onAddTileClick }) => {
 
   return ( 
-    <div className="flex items-center justify-center p-2 bg-[#e8e8e8] shadow-inner rounded-md p-4">
-      <div className="grid grid-cols-5 grid-rows-5 aspect-auto w-[90vmin] max-w-full max-h-full">
+    <div className="w-full h-full min-h-0 flex items-center justify-center overflow-hidden bg-[#e8e8e8]">
+      <div className="aspect-square h-full max-h-full max-w-full grid grid-cols-5 grid-rows-5">
 
         {allBoardTiles.map((tile, index) => (
-          <BoardTile key={index} tileHeader={tile.tileHeader} tileGoals={tile.tileGoals} />
+          <BoardTile key={index} title={tile.title} goals={tile.goals} onAddTileClick={() => onAddTileClick(index)} />
         ))}
 
       </div>

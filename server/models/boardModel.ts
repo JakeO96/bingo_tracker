@@ -1,30 +1,45 @@
 import mongoose, { Schema } from "mongoose"
-import { BoardTileData, IBoardSchema } from "../../shared/types/bingo"
+import { IBoardSchema, TileData, } from "../../shared/types/bingo"
 
 
-const tileSchema = new Schema<BoardTileData>(
+const goalSchema = new Schema(
   {
-    tileHeader:       { type: String,  required: true },
-    tileGoals:        { type: [String], required: true }
+    id: { type: String, required: true},
+    text: { type: String, required: true},
+    points: { type: Number, required: true }
+  },
+  { _id: false}
+)
+
+const tileSchema = new Schema<TileData>(
+  {
+    id: { type: String, required: true },
+    title: { type: String,  required: true },
+    goals: { 
+      type: [goalSchema], 
+      required: true,
+      default: []
+    }
   },
   { _id: false }              // omit an _id for each tile (optional)
-);
+)
 
 
 const boardSchema = new mongoose.Schema(
   {
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true],
+      required: true,
       ref: "User",
     },
     title: {
-      type: mongoose.Schema.Types.String,
-      required: [true],
+      type: String,
+      required: true,
     },
-    board: {
+    tiles: {
       type: [tileSchema],
-      required: [true],
+      required: true,
+      default: []
     },
   }, 
   {

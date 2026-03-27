@@ -1,23 +1,12 @@
-import React, { useContext, useState } from "react";
-import { PlainFormField } from './FormFields';
+import React, { /*useContext,*/ useState } from "react";
+//import { PlainFormField } from './FormFields';
 import { BingoBoard } from "./bingo/BingoBoard";
-import type { BoardData, BoardTileData, GoalData, TileData } from "../shared/types/bingo";
-import { AuthContext } from "./AuthContext"
-import expressApi from "./express-api";
-import { useNavigate } from "react-router";
+import type { BoardData, GoalData, TileData } from "../shared/types/bingo";
+//import { AuthContext } from "./AuthContext"
+//import expressApi from "./express-api";
+//import { useNavigate } from "react-router";
 import BoardTitleEditor from "./BoardTitleEditor";
-
-type InputObject = {
-  name: string,
-  value: string,
-  error?: string,
-}
-
-type Field = {
-  boardTitle: string;
-  tileHeader: string;
-  tileGoals: string;
-}
+import TileEditorModal from "./TileEditorModal";
 
 const createEmptyGoal = (): GoalData => {
   return {
@@ -41,119 +30,73 @@ const createInitialBoardTiles = (numberOfTiles: number, goalsPerTile: number): A
 
 export const CreateBoardForm: React.FC<object> = () => {
 
-  const [fields, setFields] = useState<Field>({ boardTitle: '', tileHeader: '', tileGoals: '' })
   const [boardDraft, setBoardDraft] = useState<BoardData>(
     {
       title: "Untitled Board",
       tiles: createInitialBoardTiles(25, 3)
     }
   )
-  const [showWrongFieldEntryMessage, setShowWrongFieldEntryMessage] = useState<boolean>(false)
+  const [activeTileIndex, setActiveTileIndex] = useState<number | null>(null)
+  //const [showWrongFieldEntryMessage, setShowWrongFieldEntryMessage] = useState<boolean>(false)
+  const activeTile = activeTileIndex !== null ? boardDraft.tiles[activeTileIndex] : null
 
+  //const { currentClientUsername } = useContext(AuthContext)
+  //const formInputStyles = 'p-1 bg-[#f5f5f5] inset-shadow-sm inset-shadow-gray-500 w-full focus:outline-1 focus:ring-0 focus:border-transparent'
+  //const navigate = useNavigate()
 
-  const { currentClientUsername } = useContext(AuthContext)
-  const formInputStyles = 'p-1 bg-[#f5f5f5] inset-shadow-sm inset-shadow-gray-500 w-full focus:outline-1 focus:ring-0 focus:border-transparent'
-  const navigate = useNavigate()
-
-  const onInputChange = ({ name, value }: InputObject): void => {
-    setFields(prev => ({ ...prev, [name]: value }));
-  };
-
-  const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    evt.preventDefault()
-    if (fields.tileHeader === '' || fields.tileGoals === '') {
-      setShowWrongFieldEntryMessage(true)
-      return
-    }
-    console.log(boardDraft)
-
-    const goalList = fields.tileGoals.split(',').map(goal => goal.trim())
-    setBoardDraft([...boardDraft, {'tileHeader': fields.tileHeader, 'tileGoals': goalList}])
-    setFields({ ...fields, tileHeader: '', tileGoals: '' })
-    setShowWrongFieldEntryMessage(false)
-  }
-
-  const onBoardFinish = async (evt: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
-    evt.preventDefault()
-    try {
-      console.log(`username: ${currentClientUsername}`)
-      console.log(fields.boardTitle)
-      await expressApi.createBoard({ 
-        board: boardDraft, 
-        title: fields.boardTitle 
-      })
-
-      navigate("/dashboard/boards-created")
-    } catch (error) {
-      console.error("Error creating board", error)
-    }
-  }
+  /*const handleTileClick = (index: number) => {
+    setActiveTileIndex(index)
+  }*/
 
   return (
-    <>
-    <div className="flex flex-col items-center ">
-      <BoardTitleEditor 
-        title={fields.boardTitle}
-        onSave={(nextTitle) =>
-          setFields((prev) => ({...prev, boardTitle: nextTitle }))
+    <div className="flex h-full min-h-0 flex-col items-center overflow-hidden">
+      <div className='grid grid-cols-[1fr_auto_1fr] items-end w-full'>
+        <div />
+        <BoardTitleEditor 
+        title={boardDraft.title}
+        onSave={(nextTitle) => setBoardDraft((prev) => ({...prev, title: nextTitle }))
         }
       />
-
-    </div>
-    <div className="grid grid-cols-3 w-full h-full min-h-0 pr-20">
-      <div>
-        <div className="flex justify-center">
-          <form 
-            onSubmit={onFormSubmit} 
-            className="flex flex-col items-center"
+        <div className="flex justify-end w-full gap-2">
+          <button
+            type="button"
+            className='inline-flex h-11 items-center justify-center whitespace-nowrap rounded-full border 
+            border-red-300 bg-white px-6 text-sm font-semibold text-red-400 transition duration-200 hover:cursor-pointer 
+            hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-200 active:scale-[0.98]'
           >
-            <div className="w-full bg-[#c8c8c8] p-6 shadow-md">
-              <h2 className="text-left mb-1 mt-2">Tile Header</h2>
-              <PlainFormField
-                  type={'text'} 
-                  name={'tileHeader'} 
-                  placeholder={'Add Header'} 
-                  styles={`input[type='text'] ${formInputStyles}`}
-                  onChange={onInputChange}
-                  value={fields.tileHeader}
-                  required={false}
-              />
-              <h2 className="text-left mb-1 mt-2"> Tile Goals <i className="text-sm">3 comma separated</i></h2>
-              <PlainFormField
-                  type={'text'} 
-                  name={'tileGoals'} 
-                  placeholder={'Add list of goals'} 
-                  styles={`input[type='text'] ${formInputStyles}`}
-                  onChange={onInputChange}
-                  value={fields.tileGoals}
-                  required={false}
-              />
-              <div className={showWrongFieldEntryMessage ? 'flex text-red-600' : 'hidden'}>
-                <p>*Missing title or goals</p>
-              </div>
-              <div className="flex justify-center">
-                <button type='submit' className="whitespace-nowrap inline-flex items-center justify-center font-semibold ease-in duration-200 rounded-full outline outline-black-400 text-black-400 bg-[#f5f5f5] w-6/12 my-3 hover:bg-green-400 hover:text-white hover:outline-none cursor-pointer">
-                  <p className="py-2">
-                    Add Tile
-                  </p>
-                </button>
-              </div>
-              <div className="my-2 h-px w-full bg-gradient-to-r from-transparent via-[#0a0a0a] to-transparent" />
-              <div className="flex justify-center">
-                <button onClick={onBoardFinish} className="w-full whitespace-nowrap inline-flex items-center justify-center font-semibold ease-in duration-200 rounded-full outline outline-black-400 text-black-400 bg-[#f5f5f5] w-6/12 my-3 hover:bg-green-400 hover:text-white hover:outline-none cursor-pointer">
-                  <p className="py-2">
-                    Finish Board
-                  </p>
-                </button>
-              </div>
-            </div>
-          </form>
+              Cancel
+          </button>
+          <button 
+            type='button' 
+            className="w-1/3 inline-flex h-11 items-center justify-center whitespace-nowrap rounded-full bg-emerald-500 
+            px-6 text-sm font-semibold text-white transition duration-200 hover:cursor-pointer 
+            hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200 active:scale-[0.98]"
+          >
+            <p className="py-1 text-black-400">
+              Save Board
+            </p>
+          </button>
         </div>
       </div>
-      <div className="overflow-auto bg-[#f2f2f2] inset-shadow-sm inset-shadow-black-500 px-1 pt-2 w-full col-span-2">
-        < BingoBoard allBoardTiles={boardDraft}/>
-      </div>
+      <BingoBoard 
+        allBoardTiles={boardDraft.tiles} 
+        onAddTileClick={(index: number) => setActiveTileIndex(index)} 
+      />
+      {activeTile && (
+        <TileEditorModal
+          tile={activeTile}
+          onClose={() => setActiveTileIndex(null)}
+          onSave={(updatedTile: TileData) => {
+            setBoardDraft((prev) => ({
+              ...prev,
+              tiles: prev.tiles.map((tile, index) =>
+                index === activeTileIndex ? updatedTile : tile
+            ),
+          }))
+          setActiveTileIndex(null)
+        }}
+        />
+      )}    
     </div>
-    </>
   )
 }

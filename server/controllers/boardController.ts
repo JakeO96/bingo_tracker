@@ -29,7 +29,7 @@ const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, ne
     const board = new Board ({
       ownerId: ownerRecord._id,
       title: boardData.title,
-      board: boardData.board,
+      tiles: boardData.tiles,
     })
 
     try {
@@ -47,19 +47,19 @@ const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, ne
 
 //@desc Get a single Board
 // record
-//@route GET /api/game/:id
+//@route GET /api/board/:id
 //@access public
 const getBoard = asyncHandler( async (req: Request, res: Response) => {
-  const game = await Board
-.findById(req.params.id);
-  if(game) {
-    res.status(HttpStatusCode.SUCCESS).json(game);
-  } 
-  else {
-    res.status(HttpStatusCode.NOT_FOUND);
-    throw new Error("Board not found");
-  }
-});
+  const board = await Board
+  .findById(req.params.id);
+    if(board) {
+      res.status(HttpStatusCode.SUCCESS).json(board);
+    } 
+    else {
+      res.status(HttpStatusCode.NOT_FOUND);
+      throw new Error("Board not found");
+    }
+  });
 
 /*
 //@desc Delete a Board
@@ -91,7 +91,7 @@ const deleteGame = asyncHandler( async (req: RequestWithUser, res: Response) => 
 
 //@desc Get all Board
 // records for a User
-//@route GET /api/game/create-game
+//@route GET /api/board/getAllBoardsForUser
 //@access private
 const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
   if (req.user) {

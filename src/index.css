@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/*Remove Arrows in chrome, safari, edge*/
+inpit['number'] {
+  appearance: textfield;
+  -moz-appearance:texfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appeaarance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/*Remove arrows in Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+
