@@ -11,7 +11,7 @@ const goalSchema = new Schema(
   { _id: false}
 )
 
-const tileSchema = new Schema<BoardTileData>(
+export const tileSchema = new Schema<BoardTileData>(
   {
     id: { type: String, required: true },
     title: { type: String,  required: false },

@@ -1,9 +1,10 @@
-import { useState } from "react";
-import type { EventData } from "./CreateEventPage"
+import React, { useState } from "react";
+import type { EventData } from "../shared/types/events.ts"
 import { PlainFormField } from "./FormFields";
 import type { BoardData, BoardSummary, IBoardSchema } from "../shared/types/bingo";
 import expressApi from "./express-api";
 import EventBoardSelector from "./EventBoardSelector";
+import EventTeamsEditor from "./EventTeamsEditor";
 
 type EventBuilderProps = {
   event: EventData;
@@ -78,6 +79,78 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
           onChange={onInputChange}
           styles={`input[type='text'] ${formInputStyles}`}
         />
+        <div>
+          <h2>Event Description</h2>
+          <textarea
+            name='description'
+            value={eventDraft.description}
+            rows={4}
+            placeholder='Enter description of event...'
+            onChange={(e) =>
+              onInputChange({
+                name: e.target.name,
+                value: e.target.value,
+              })
+            }
+            className={`${formInputStyles} text-sm resize-none h-full`}        
+          />
+        </div>
+        <div>
+          <h2>Starts</h2>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="date"
+              name="startDate"
+              value={eventDraft.startDate}
+              onChange={(e) =>
+                onInputChange({
+                  name: e.target.name,
+                  value: e.target.value
+                })
+              }
+              className={`${formInputStyles} cursor-text`}
+            />
+            <input
+              type="time"
+              name="startTime"
+              value={eventDraft.startDate}
+              onChange={(e) =>
+                onInputChange({
+                  name: e.target.name,
+                  value: e.target.value
+                })
+              }
+              className={`${formInputStyles} cursor-text`}
+            />
+          </div>
+          <h2>Ends</h2>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="date"
+              name="endDate"
+              value={eventDraft.startDate}
+              onChange={(e) =>
+                onInputChange({
+                  name: e.target.name,
+                  value: e.target.value
+                })
+              }
+              className={`${formInputStyles} cursor-text`}
+            />
+            <input
+              type="time"
+              name="endTime"
+              value={eventDraft.startDate}
+              onChange={(e) =>
+                onInputChange({
+                  name: e.target.name,
+                  value: e.target.value
+                })
+              }
+              className={`${formInputStyles} cursor-text`}
+            />
+          </div>
+        </div>
         <EventBoardSelector
           boards={availableBoards}
           value={eventDraft.sourceBoardId}
@@ -92,8 +165,19 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             </p>
           </div>
         )}
+
+        <EventTeamsEditor
+          teams={eventDraft.teams}
+          onChangeTeams={(updatedTeams) => 
+            setEventDraft((prev) => ({
+              ...prev,
+              teams: updatedTeams,
+            }))
+          }
+        />
+
         
-        <div className="flex justify-end w-full gap-2">
+        <div className="flex justify-center items-center w-full gap-2">
           <button
             type="button"
             className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-full border 

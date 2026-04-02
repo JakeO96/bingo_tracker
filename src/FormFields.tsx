@@ -20,6 +20,8 @@ export interface RecordCheckResponse extends Response {
   exists: boolean;
 }
 
+export const formInputStyles = "h-11 p-1 bg-white border border-gray-400 w-full focus:outline-none focus:border-gray-700 focus:ring-1 focus:ring-gray-300"
+
 const PlainFormField = forwardRef<HTMLInputElement, PlainFormFieldProps>( 
   (
     { 
