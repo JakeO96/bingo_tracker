@@ -4,7 +4,6 @@ import asyncHandler from 'express-async-handler'
 import Board from '../models/boardModel'
 import User from '../models/userModel'
 import type { ActiveUser } from '../models/userModel'
-//import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv-safe';
 dotenv.config();
 
@@ -48,18 +47,19 @@ const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, ne
 //@desc Get a single Board
 // record
 //@route GET /api/board/:id
-//@access public
+//@access private
 const getBoard = asyncHandler( async (req: Request, res: Response) => {
-  const board = await Board
-  .findById(req.params.id);
-    if(board) {
-      res.status(HttpStatusCode.SUCCESS).json(board);
-    } 
-    else {
-      res.status(HttpStatusCode.NOT_FOUND);
-      throw new Error("Board not found");
-    }
-  });
+  const board = await Board.findById(req.params.id);
+  console.log(`$$$firing in boardController getBoard, board id is ${req.params.id}`)
+  if(board) {
+    res.status(HttpStatusCode.SUCCESS).json(board);
+    console.log(board.toJSON())
+  } 
+  else {
+    res.status(HttpStatusCode.NOT_FOUND);
+    throw new Error("Board not found");
+  }
+})
 
 /*
 //@desc Delete a Board
@@ -89,15 +89,69 @@ const deleteGame = asyncHandler( async (req: RequestWithUser, res: Response) => 
 });
 */
 
-//@desc Get all Board
-// records for a User
+//@desc Get all Board records for a User
 //@route GET /api/board/getAllBoardsForUser
 //@access private
 const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
   if (req.user) {
+    console.log(`inside getAllBoardsForUser ownerID is ${req.user.id}`)
     const allUserOwnedBoards = await Board.find({ ownerId: req.user.id}).exec()
     res.status(HttpStatusCode.SUCCESS).json(allUserOwnedBoards)
   }
 })
 
-export { createBoard, getBoard, getAllBoardsForUser }
+const getAllBoardSummariesForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
+  if (req.user) {
+    console.log('Firing in getAllBoardSummaries')
+    const boards = await Board.find({ ownerId: req.user.id })
+      .select("_id title updatedAt createdAt")
+      .sort({ updatedAt: -1})
+      .lean()
+
+    console.log('boards below vvvvvvvvvvv')
+    console.log(boards)
+    const boardSummaries = boards.map((board) => ({
+      boardId: board._id.toString(),
+      title: board.title,
+      updatedAt: board.updatedAt,
+      createdAt: board.createdAt
+    }))
+    console.log('boardSummaries below vvvvvvvvv')
+    console.log(boardSummaries)
+
+    res.status(200).json(boardSummaries)
+  } else {
+    res.status(401)
+    throw new Error("User not authenticated")
+  }
+})
+
+//@desc Update a specific board
+//@route GET /api/board/updateBoard
+//@access private
+const updateBoard = asyncHandler( async (req: RequestWithUser, res: Response) => {
+  const id = req.params.id
+  const updates = req.body.updateData
+
+  console.log('inside board controller upateBoard, id below')
+  console.log(id)
+  console.log('updates below')
+  console.log(updates)
+
+  const updatedBoard = await Board.findByIdAndUpdate(
+    id,
+    updates,
+    { new: true,
+      runValidators: true
+    }
+  )
+
+  if (!updatedBoard) {
+    res.status(404)
+    throw new Error("Board not found")
+  }
+  console.log('firing right before returning successful update')
+  res.status(200).json(updatedBoard)
+})
+
+export { createBoard, getBoard, getAllBoardsForUser, getAllBoardSummariesForUser, updateBoard }

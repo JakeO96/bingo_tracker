@@ -1,10 +1,10 @@
 import type React from "react"
-import type { GoalData } from "../../shared/types/bingo"
+import type { BoardGoalData } from "../../shared/types/bingo"
 
 type BoardTileProps = {
   title: string;
-  goals: GoalData[];
-  onAddTileClick: () => void;
+  goals: BoardGoalData[];
+  onAddTileClick?: () => void | undefined;
 }
 
 export  const BoardTile: React.FC<BoardTileProps> = ({ title, goals, onAddTileClick }) => {

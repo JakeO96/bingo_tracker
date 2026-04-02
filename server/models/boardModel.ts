@@ -1,20 +1,20 @@
 import mongoose, { Schema } from "mongoose"
-import { IBoardSchema, TileData, } from "../../shared/types/bingo"
+import { IBoardSchema, BoardTileData, } from "../../shared/types/bingo"
 
 
 const goalSchema = new Schema(
   {
     id: { type: String, required: true},
-    text: { type: String, required: true},
-    points: { type: Number, required: true }
+    text: { type: String, required: false },
+    points: { type: Number, required: false }
   },
   { _id: false}
 )
 
-const tileSchema = new Schema<TileData>(
+const tileSchema = new Schema<BoardTileData>(
   {
     id: { type: String, required: true },
-    title: { type: String,  required: true },
+    title: { type: String,  required: false },
     goals: { 
       type: [goalSchema], 
       required: true,

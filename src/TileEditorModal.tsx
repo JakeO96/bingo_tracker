@@ -1,16 +1,16 @@
 import { useState } from 'react'
-import type { GoalData, TileData } from '../shared/types/bingo'
+import type { BoardGoalData, BoardTileData } from '../shared/types/bingo'
 import { PlainFormField } from './FormFields';
 
 type TileEditorModalProps =  {
-  tile: TileData;
+  tile: BoardTileData;
   onClose: () => void;
-  onSave: (tile: TileData) => void;
+  onSave: (tile: BoardTileData) => void;
 }
 
 type Fields = {
   title: string
-  goals: GoalData[]
+  goals: BoardGoalData[]
 }
 
 type InputObject = {
@@ -46,7 +46,7 @@ export default function TileEditorModal({
 
   const onFormSubmit = (evt: React.FormEvent<HTMLFormElement>): void => {
     evt.preventDefault()
-    const updatedTile: TileData = {
+    const updatedTile: BoardTileData = {
       id: tile.id,
       title: fields.title,
       goals: fields.goals

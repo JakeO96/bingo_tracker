@@ -1,26 +1,34 @@
 import type { Schema } from "mongoose";
 
-export type GoalData = {
+export type BoardGoalData = {
   id: string;
   text: string;
   points: number;
 }
 
-export type TileData = {
+export type BoardTileData = {
   id: string;
   title: string;
-  goals: GoalData[];
+  goals: BoardGoalData[];
 }
 
 export type BoardData = {
   title: string;
-  tiles: TileData[];
+  tiles: BoardTileData[];
+}
+
+export type BoardSummary = {
+  boardId: string;
+  title: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IBoardSchema extends Document {
+  _id: Schema.Types.ObjectId;
   ownerId: Schema.Types.ObjectId;
   title: string;
-  tiles: TileData[];
+  tiles: BoardTileData[];
   createdAt: Date;
   updatedAt: Date;
 }

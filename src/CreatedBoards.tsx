@@ -14,7 +14,7 @@ export const CreatedBoards: React.FC = () => {
           boardsArray.map((boardRecord: IBoardSchema) => (
             <Link 
               key={crypto.randomUUID()}
-              to={`/boards/${boardRecord.boardId}`}
+              to={`/board/${boardRecord._id}`}
               className=""
             >  
               <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4">

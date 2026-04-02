@@ -6,26 +6,25 @@ import { connectDb } from "./config/dbConnection"
 import express from "express"
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import WebSocket from 'ws';
-import http, { IncomingMessage} from 'http';
+import http from 'http';
 //import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv-safe';
 import mongoose from 'mongoose';
 dotenv.config();
 
-interface ExtendedIncomingMessage extends IncomingMessage {
+/*interface ExtendedIncomingMessage extends IncomingMessage {
   user?: { 
     username?: string; 
   };
-}
+}*/
 
-interface ExtendedWebSocket extends WebSocket {
+/*interface ExtendedWebSocket extends WebSocket {
   username?: string;
-}
+}*/
 
-interface ActiveConnections {
+/*interface ActiveConnections {
   [key: string]: ExtendedWebSocket;
-}
+}*/
 
 mongoose.set("debug", true);
 connectDb();

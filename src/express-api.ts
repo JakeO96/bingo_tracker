@@ -1,5 +1,7 @@
 import type { RecordCheckResponse } from "./FormFields";
 import type { LoginResponse } from '../shared/types/api.ts'
+import type { BoardData } from "../shared/types/bingo.ts";
+import type { EventData } from "./CreateEventPage.tsx";
 
 const SERVER_API_URL= 'http://localhost:3002/api'
 const fetchMethods = {
@@ -7,6 +9,7 @@ const fetchMethods = {
   'GET': 'GET',
   'PUT': 'PUT',
   'DELETE': 'DELETE',
+  'PATCH': 'PATCH'
 }
 
 class ExpressAPI {
@@ -102,6 +105,51 @@ class ExpressAPI {
     return responseJSON
   }
 
+  getAllBoardSummariesForUser = async (): Promise<unknown> => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.GET,
+      '/board/getAllBoardSummariesForUser',
+      {},
+      "Failed to get user board summaries"
+    )
+
+    return responseJSON
+  }
+
+  getBoard = async (id: string): Promise<unknown> => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.GET,
+      `/board/${id}`,
+      {},
+      "Failed to get board"
+    )
+
+    return responseJSON
+  }
+
+  updateBoard = async (id: string, updateData: BoardData) => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.PATCH,
+      `/board/${id}`,
+      { updateData },
+      "Failed to update board"
+    )
+
+    return responseJSON
+
+  }
+
+  createEvent = async (draftEvent: EventData): Promise<Response> => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.POST,
+      'event/create-event',
+      { draftEvent },
+      "Failed to create board"
+    )
+
+    return responseJSON
+  }
+
   // Fetch wrapper
   private makeApiCall = async (method: string, endpoint: string, data: unknown, errorMessage: string): Promise<Response> => {
     const url = `${SERVER_API_URL}${endpoint}`
@@ -114,7 +162,7 @@ class ExpressAPI {
       headers,
       credentials: 'include', // Include http-only cookies
     };
-    if (method === 'POST') {
+    if (method !== 'GET') {
       requestOptions.body = JSON.stringify(data)
     }
     

@@ -55,7 +55,7 @@ export default function BoardTitleEditor({
     }
   }
 
-  if (isEditing){
+  if (isEditing) {
     return (
       <PlainFormField
         ref={inputRef}
@@ -76,7 +76,8 @@ export default function BoardTitleEditor({
     <button 
       type="button"
       onClick={handleStartEditing}
-      className="inline-flex items-center justify-center bg-transparent border-none text-2xl font-bold px-2 hover:cursor-pointer"
+      className="inline-flex items-center justify-center h-full bg-transparent border-none text-2xl font-bold px-2 
+                hover:cursor-pointer hover:shadow-md hover:shadow-black hover:bg-slate-50"
     >
       {title.trim() || "Untitled Board"}
     </button>
