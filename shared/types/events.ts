@@ -13,6 +13,15 @@ export type Participant = {
   userId: string | null;
 }
 
+export type ParticipantDB = {
+  id: string;
+  eventId: string;
+  displayName: string;
+  rsn: string;
+  teamId: string | null;
+  userId: Types.ObjectId | null;
+}
+
 export type GoalSubmissionStatus = "pending" | "approved" | "rejected";
 
 export type GoalSubmission = {
@@ -23,6 +32,18 @@ export type GoalSubmission = {
   submittedAt: Date;
   status: GoalSubmissionStatus;
   reviewedByUserId: string | null;
+  reviewedAt: Date | null;
+  reviewNote: string | null;
+}
+
+export type GoalSubmissionDB = {
+  id: string;
+  submittedByUserId: Types.ObjectId | null;
+  submittedByParticipantId: string | null;
+  screenshotUrls: string[];
+  submittedAt: Date;
+  status: GoalSubmissionStatus;
+  reviewedByUserId: Types.ObjectId | null;
   reviewedAt: Date | null;
   reviewNote: string | null;
 }
@@ -89,8 +110,8 @@ export type EventData = {
   description: string;
   sourceBoardId: string;
   boardSnapshot: EventBoardSnapshot;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   teams: EventTeamData[];
   settings: EventSettings;
   status: EventStatus;
@@ -102,7 +123,7 @@ export interface IEventSchema extends Document {
   title: string;
   description: string;
   sourceBoardId: Types.ObjectId;
-  boardSnapshot: EventBoardSnapshot;
+  boardSnapshot: EventBoardSnapshotDB;
   startDate: Date;
   endDate: Date;
   teams: EventTeamData[];

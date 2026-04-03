@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IEventSchema, EventTeamData, Participant, TeamProgress, TeamTileProgress, TeamGoalProgress, GoalSubmission, EventSettings, EventBoardSnapshotDB } from "../../shared/types/events"
+import { IEventSchema, EventTeamData, TeamProgress, TeamTileProgress, TeamGoalProgress, EventSettings, EventBoardSnapshotDB, ParticipantDB, GoalSubmissionDB } from "../../shared/types/events"
 import { tileSchema } from "./boardModel";
 
 const eventBoardSnapshotSchema = new Schema<EventBoardSnapshotDB>(
@@ -22,7 +22,7 @@ const eventBoardSnapshotSchema = new Schema<EventBoardSnapshotDB>(
   { _id: false }
 )
 
-const participantSchema = new Schema<Participant>(
+const participantSchema = new Schema<ParticipantDB>(
   {
     id: {
       type: String,
@@ -42,6 +42,7 @@ const participantSchema = new Schema<Participant>(
     },
     teamId: {
       type: String,
+      default: null
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -51,7 +52,7 @@ const participantSchema = new Schema<Participant>(
   },
 )
 
-const goalSubmissionSchema = new Schema<GoalSubmission>(
+const goalSubmissionSchema = new Schema<GoalSubmissionDB>(
   {
     id: {
       type: String,
