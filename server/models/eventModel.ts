@@ -42,7 +42,6 @@ const participantSchema = new Schema<Participant>(
     },
     teamId: {
       type: String,
-      required: true
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -61,7 +60,10 @@ const goalSubmissionSchema = new Schema<GoalSubmission>(
     submittedByUserId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null
+    },
+    submittedByParticipantId: {
+      type: String,
       default: null
     },
     screenshotUrls: {
@@ -161,7 +163,8 @@ const eventTeamDataSchema = new Schema<EventTeamData>(
     },
     progress: {
       type: teamProgressSchema,
-      required: true
+      required: true,
+      default: () => ({ tiles: [] })
     }
   },
   { _id: false }
@@ -188,7 +191,7 @@ const eventSettingsSchema = new Schema<EventSettings>(
       type: Boolean,
       required: true
     },
-    interTeamBoardAcces: {
+    interTeamBoardAccess: {
       type: Boolean,
       required: true
     },
@@ -214,8 +217,7 @@ const eventSchema = new mongoose.Schema(
     sourceBoardId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Board",
-      required: true,
-      default: null
+      required: true
     },
     boardSnapshot: {
       type: eventBoardSnapshotSchema,

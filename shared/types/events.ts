@@ -1,4 +1,4 @@
-import type { Schema } from 'mongoose';
+import type { Types } from 'mongoose';
 import type { BoardTileData } from './bingo.ts'
 
 
@@ -8,22 +8,22 @@ export type Participant = {
   id: string;
   eventId: string;
   displayName: string;
-  rsn?: string;
+  rsn: string;
   teamId?: string;
   userId?: string;
-  createdAt: string;
 }
 
 export type GoalSubmissionStatus = "pending" | "approved" | "rejected";
 
 export type GoalSubmission = {
   id: string;
-  submittedByUserId: string | null;
+  submittedByUserId?: string;
+  submittedByParticipantId?: string;
   screenshotUrls: string[];
   submittedAt: Date;
   status: GoalSubmissionStatus;
   reviewedByUserId?: string;
-  reviewedAt?: string;
+  reviewedAt?: Date;
   reviewNote?: string;
 }
 
@@ -55,7 +55,7 @@ export type EventSettings = {
   joinMode: "open_link" | "team_link";
   visibility: "private" | "public";
   globalPointsLeaderBoard: boolean;
-  interTeamBoardAcces: boolean;
+  interTeamBoardAccess: boolean;
 }
 
 export type EventBoardSnapshot = {
@@ -64,11 +64,11 @@ export type EventBoardSnapshot = {
   boardTiles: BoardTileData[];
 }
 
-export type EventData = {
+export type EventFormData = {
   title: string;
   description: string;
   sourceBoardId: string;
-  boardSnapshot?: EventBoardSnapshot;
+  boardSnapshot: EventBoardSnapshot;
   startDate: string;
   startTime: string;
   endDate: string;
@@ -78,17 +78,27 @@ export type EventData = {
   status: EventStatus;
 }
 
-export interface IEventSchema extends Document {
-  _id: Schema.Types.ObjectId;
-  ownerId: Schema.Types.ObjectId;
+export type EventData = {
   title: string;
   description: string;
   sourceBoardId: string;
-  boardSnapshot?: EventBoardSnapshot;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
+  boardSnapshot: EventBoardSnapshot;
+  startDate: Date;
+  startTime: Date;
+  teams: EventTeamData[];
+  settings: EventSettings;
+  status: EventStatus;
+}
+
+export interface IEventSchema extends Document {
+  _id: Types.ObjectId;
+  ownerId: Types.ObjectId;
+  title: string;
+  description: string;
+  sourceBoardId: Types.ObjectId;
+  boardSnapshot: EventBoardSnapshot;
+  startDate: Date;
+  endDate: Date;
   teams: EventTeamData[];
   settings: EventSettings;
   status: EventStatus;
