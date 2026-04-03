@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
-import { IEventSchema, EventBoardSnapshot, EventTeamData, Participant, TeamProgress, TeamTileProgress, TeamGoalProgress, GoalSubmission, EventSettings } from "../../shared/types/events"
+import { IEventSchema, EventTeamData, Participant, TeamProgress, TeamTileProgress, TeamGoalProgress, GoalSubmission, EventSettings, EventBoardSnapshotDB } from "../../shared/types/events"
 import { tileSchema } from "./boardModel";
 
-const eventBoardSnapshotSchema = new Schema<EventBoardSnapshot>(
+const eventBoardSnapshotSchema = new Schema<EventBoardSnapshotDB>(
   {
     boardId: {
       type: mongoose.Schema.Types.ObjectId,

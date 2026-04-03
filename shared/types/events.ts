@@ -1,4 +1,4 @@
-import type { Types } from 'mongoose';
+import type { Document, Types } from 'mongoose';
 import type { BoardTileData } from './bingo.ts'
 
 
@@ -9,22 +9,22 @@ export type Participant = {
   eventId: string;
   displayName: string;
   rsn: string;
-  teamId?: string;
-  userId?: string;
+  teamId: string | null;
+  userId: string | null;
 }
 
 export type GoalSubmissionStatus = "pending" | "approved" | "rejected";
 
 export type GoalSubmission = {
   id: string;
-  submittedByUserId?: string;
-  submittedByParticipantId?: string;
+  submittedByUserId: string | null;
+  submittedByParticipantId: string | null;
   screenshotUrls: string[];
   submittedAt: Date;
   status: GoalSubmissionStatus;
-  reviewedByUserId?: string;
-  reviewedAt?: Date;
-  reviewNote?: string;
+  reviewedByUserId: string | null;
+  reviewedAt: Date | null;
+  reviewNote: string | null;
 }
 
 export type TeamGoalProgress = {
@@ -59,7 +59,13 @@ export type EventSettings = {
 }
 
 export type EventBoardSnapshot = {
-  boardId: string | null;
+  boardId: string;
+  boardTitle: string;
+  boardTiles: BoardTileData[];
+}
+
+export type EventBoardSnapshotDB = {
+  boardId: Types.ObjectId;
   boardTitle: string;
   boardTiles: BoardTileData[];
 }
@@ -84,7 +90,7 @@ export type EventData = {
   sourceBoardId: string;
   boardSnapshot: EventBoardSnapshot;
   startDate: Date;
-  startTime: Date;
+  endDate: Date;
   teams: EventTeamData[];
   settings: EventSettings;
   status: EventStatus;
