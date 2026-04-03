@@ -20,7 +20,7 @@ export type GoalSubmission = {
   id: string;
   submittedByUserId: string | null;
   screenshotUrls: string[];
-  submittedAt: string;
+  submittedAt: Date;
   status: GoalSubmissionStatus;
   reviewedByUserId?: string;
   reviewedAt?: string;

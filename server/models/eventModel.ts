@@ -6,9 +6,8 @@ const eventBoardSnapshotSchema = new Schema<EventBoardSnapshot>(
   {
     boardId: {
       type: mongoose.Schema.Types.ObjectId,
-      red: "Board",
-      required: true,
-      default: null
+      ref: "Board",
+      required: true
     },
     boardTitle: {
       type: String,
@@ -31,7 +30,7 @@ const participantSchema = new Schema<Participant>(
     },
     eventId: {
       type: String,
-      reqiured: true
+      required: true
     },
     displayName: {
       type: String,
@@ -48,11 +47,9 @@ const participantSchema = new Schema<Participant>(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
       default: null
     },
   },
-  { timestamps: true, _id: false }
 )
 
 const goalSubmissionSchema = new Schema<GoalSubmission>(
@@ -73,28 +70,25 @@ const goalSubmissionSchema = new Schema<GoalSubmission>(
       default: []
     },
     submittedAt: {
-      type: String,
+      type: Date,
       required: true
     },
     status: {
       type: String,
-      enum: ["draft", "open", "started", "ended"],
+      enum: ["pending", "approved", "rejected"],
       required: true
     },
     reviewedByUserId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
       default: null
     },
     reviewedAt: {
       type: Date,
-      required: true,
       default: null
     },
     reviewNote: {
       type: String,
-      required: true,
       default: null
     }
   },
