@@ -1,14 +1,14 @@
-import type { EventData } from '../shared/types/events.ts';
+import type { EventData, EventFormData } from '../shared/types/events.ts';
 import Eventbuilder from "./EventBuilder";
 import expressApi from "./express-api";
 import { useLoaderData, useNavigate } from "react-router";
 
 export default function CreateEventPage() {
-  const emptyEvent: EventData = {
+  const emptyEvent: EventFormData = {
     title: '',
     description: '',
     sourceBoardId: '',
-    boardSnapshot: undefined,
+    boardSnapshot: null,
     startDate: '',
     startTime: '',
     endDate: '',
@@ -32,7 +32,7 @@ export default function CreateEventPage() {
       joinMode: 'open_link',
       visibility: "private",
       globalPointsLeaderBoard: true,
-      interTeamBoardAcces: false
+      interTeamBoardAccess: false
 
     },
     status: 'draft'
@@ -44,8 +44,10 @@ export default function CreateEventPage() {
 
   const handleCreateEvent = async (draftEvent: EventData) => {
     try{
+      console.log('in the handleCreateEvent on the createevent page draftEvent VVVV')
+      console.log(draftEvent)
       await expressApi.createEvent(draftEvent)
-      navigate('/event/:id')
+      navigate('/events-created')
     } catch(error) {
       console.error("Failed to create board", error)
     }

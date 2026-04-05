@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { EventData } from "../shared/types/events.ts"
+import type { EventData, EventFormData } from "../shared/types/events.ts"
 import { PlainFormField } from "./FormFields";
 import type { BoardData, BoardSummary, IBoardSchema } from "../shared/types/bingo";
 import expressApi from "./express-api";
@@ -7,7 +7,7 @@ import EventBoardSelector from "./EventBoardSelector";
 import EventTeamsEditor from "./EventTeamsEditor";
 
 type EventBuilderProps = {
-  event: EventData;
+  event: EventFormData;
   apiFunction: (event: EventData) => void;
   availableBoards: BoardSummary[];
   preSelectedBoard: BoardData | null;
@@ -20,7 +20,7 @@ type InputObject = {
 }
 
 export default function Eventbuilder({ event, apiFunction, availableBoards, preSelectedBoard }: EventBuilderProps) {
-  const [eventDraft, setEventDraft] = useState<EventData>(event)
+  const [eventDraft, setEventDraft] = useState<EventFormData>(event)
   const [selectedBoard, setSelectedBoard] = useState<BoardData | null>(preSelectedBoard)
   const [isLoadingBoard, setIsLoadingBoard] = useState<boolean>(false)
   const [boardLoadError, setBoardLoadError] = useState<string | null>(null)
@@ -62,14 +62,28 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
     }
   }
 
-  const onCreateEventClick = async (evt: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+  const onCreateEventClick = async (evt: React.FormEvent<HTMLFormElement>): Promise<void> => {
     evt.preventDefault()
-    apiFunction(eventDraft)
+    console.log(eventDraft)
+    const startAt = new Date(`${eventDraft.startDate}T${eventDraft.startTime}`)
+    const endAt = new Date(`${eventDraft.endDate}T${eventDraft.endTime}`)
+    const event: EventData = {
+      title: eventDraft.title,
+      description: eventDraft.description,
+      sourceBoardId: eventDraft.sourceBoardId,
+      boardSnapshot: eventDraft.boardSnapshot,
+      startAt: startAt.toISOString(),
+      endAt: endAt.toISOString(),
+      teams: eventDraft.teams,
+      settings: eventDraft.settings,
+      status: eventDraft.status
+    }
+    apiFunction(event)
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <form>
+      <form onSubmit={onCreateEventClick}>
         <h2>Title</h2>
         <PlainFormField
           type='text'
@@ -101,7 +115,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             <input
               type="date"
               name="startDate"
-              value={eventDraft.startDate}
+              value={eventDraft.startDate as string}
               onChange={(e) =>
                 onInputChange({
                   name: e.target.name,
@@ -113,7 +127,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             <input
               type="time"
               name="startTime"
-              value={eventDraft.startDate}
+              value={eventDraft.startTime as string}
               onChange={(e) =>
                 onInputChange({
                   name: e.target.name,
@@ -128,7 +142,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             <input
               type="date"
               name="endDate"
-              value={eventDraft.startDate}
+              value={eventDraft.endDate as string}
               onChange={(e) =>
                 onInputChange({
                   name: e.target.name,
@@ -140,7 +154,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             <input
               type="time"
               name="endTime"
-              value={eventDraft.startDate}
+              value={eventDraft.endTime as string}
               onChange={(e) =>
                 onInputChange({
                   name: e.target.name,
@@ -188,8 +202,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             Cancel
           </button>
           <button
-            type='button'
-            onClick={onCreateEventClick}
+            type='submit'
             className="w-1/3 inline-flex h-11 items-center justify-center whitespace-nowrap rounded-full bg-emerald-500 
                       px-6 text-sm font-semibold text-white transition duration-200 hover:cursor-pointer 
                       hover:brightness-120 focus:outline-none focus:ring-2 focus:ring-emerald-200 active:scale-[0.98]"

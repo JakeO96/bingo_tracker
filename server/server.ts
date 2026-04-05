@@ -1,15 +1,15 @@
-import {authRouter as authRoutes} from './routes/authRoutes';
-import {userRouter as userRoutes} from './routes/userRoutes';
-import {boardRouter as boardRoutes} from './routes/boardRoutes';
+import {authRouter as authRoutes} from './routes/authRoutes'
+import {userRouter as userRoutes} from './routes/userRoutes'
+import {boardRouter as boardRoutes} from './routes/boardRoutes'
+import {eventRouter as eventRoutes} from './routes/eventRoutes'
 import { errorHandler } from "./middleware/errorHandler"
 import { connectDb } from "./config/dbConnection"
 import express from "express"
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import http from 'http';
-//import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv-safe';
-import mongoose from 'mongoose';
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import http from 'http'
+import dotenv from 'dotenv-safe'
+import mongoose from 'mongoose'
 dotenv.config();
 
 /*interface ExtendedIncomingMessage extends IncomingMessage {
@@ -51,6 +51,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/board", boardRoutes);
+app.use("/api/event", eventRoutes)
 app.use(errorHandler);
 
 const server = http.createServer(app);

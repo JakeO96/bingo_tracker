@@ -13,7 +13,7 @@ const links: RouteLink[] = [
   { label: 'Create Board', to:'/create-board' },
   { label: 'My Boards', to: '/boards-created' },
   { label: 'Create Event', to:'/create-event' },
-  { label: 'My Events', to:'/my-events' },
+  { label: 'My Events', to:'/events-created' },
 ]
 
 const NavItem: React.FC<{ link: RouteLink; level: number}> = ({ link, level}) => {

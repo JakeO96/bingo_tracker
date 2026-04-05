@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
-import { IEventSchema, EventTeamData, TeamProgress, TeamTileProgress, TeamGoalProgress, EventSettings, EventBoardSnapshotDB, ParticipantDB, GoalSubmissionDB } from "../../shared/types/events"
+import { IEventSchema } from "../../shared/types/events"
 import { tileSchema } from "./boardModel";
 
-const eventBoardSnapshotSchema = new Schema<EventBoardSnapshotDB>(
+const eventBoardSnapshotSchema = new Schema(
   {
     boardId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +22,7 @@ const eventBoardSnapshotSchema = new Schema<EventBoardSnapshotDB>(
   { _id: false }
 )
 
-const participantSchema = new Schema<ParticipantDB>(
+const participantSchema = new Schema(
   {
     id: {
       type: String,
@@ -52,7 +52,7 @@ const participantSchema = new Schema<ParticipantDB>(
   },
 )
 
-const goalSubmissionSchema = new Schema<GoalSubmissionDB>(
+const goalSubmissionSchema = new Schema(
   {
     id: {
       type: String,
@@ -98,7 +98,7 @@ const goalSubmissionSchema = new Schema<GoalSubmissionDB>(
   { _id: false }
 )
 
-const teamGoalProgressSchema = new Schema<TeamGoalProgress>(
+const teamGoalProgressSchema = new Schema(
   {
     goalId: {
       type: String,
@@ -117,7 +117,7 @@ const teamGoalProgressSchema = new Schema<TeamGoalProgress>(
   { _id: false }
 )
 
-const teamTileProgressSchema = new Schema<TeamTileProgress>(
+const teamTileProgressSchema = new Schema(
   {
     tileId: {
       type: String,
@@ -136,7 +136,7 @@ const teamTileProgressSchema = new Schema<TeamTileProgress>(
   { _id: false }
 )
 
-const teamProgressSchema = new Schema<TeamProgress>(
+const teamProgressSchema = new Schema(
   {
     tiles: {
       type: [teamTileProgressSchema],
@@ -147,7 +147,7 @@ const teamProgressSchema = new Schema<TeamProgress>(
   { _id: false }
 )
 
-const eventTeamDataSchema = new Schema<EventTeamData>(
+const eventTeamDataSchema = new Schema(
   {
     id: {
       type: String,
@@ -171,7 +171,7 @@ const eventTeamDataSchema = new Schema<EventTeamData>(
   { _id: false }
 )
 
-const eventSettingsSchema = new Schema<EventSettings>(
+const eventSettingsSchema = new Schema(
   {
     approvalMode: {
       type: String,
@@ -224,11 +224,11 @@ const eventSchema = new mongoose.Schema(
       type: eventBoardSnapshotSchema,
       required: true,
     },
-    startDate: {
+    startAt: {
       type: Date,
       required: true,
     },
-    endDate: {
+    endAt: {
       type: Date,
       required: true,
     },

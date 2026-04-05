@@ -14,7 +14,7 @@ interface RequestWithUser extends Request {
 
 //@desc Create a Board
 // record
-//@route POST /api/game/create-game
+//@route POST /api/board/create-board
 //@access private
 const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
   const boardData = req.body
@@ -25,7 +25,7 @@ const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, ne
       res.status(HttpStatusCode.VALIDATION_ERROR)
       throw new Error("Some user does not exist")
     }
-    const board = new Board ({
+    const board = new Board({
       ownerId: ownerRecord._id,
       title: boardData.title,
       tiles: boardData.tiles,
@@ -111,7 +111,7 @@ const getAllBoardSummariesForUser = asyncHandler( async (req: RequestWithUser, r
     console.log('boards below vvvvvvvvvvv')
     console.log(boards)
     const boardSummaries = boards.map((board) => ({
-      boardId: board._id.toString(),
+      id: board._id.toString(),
       title: board.title,
       updatedAt: board.updatedAt,
       createdAt: board.createdAt

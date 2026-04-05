@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { Document } from "mongoose";
 import { IBoardSchema } from "../../shared/types/bingo";
+import { IEventSchema } from "../../shared/types/events";
 
 export interface IUser extends Document {
   email: string;
@@ -8,6 +9,8 @@ export interface IUser extends Document {
   password: string;
   boardsOwned: Array<IBoardSchema>;
   boardsJoined: Array<IBoardSchema>;
+  eventsOwned: Array<IEventSchema>;
+  eventsJoined: Array<IEventSchema>;
   refreshTokens: string[];
   invalidatedTokens: string[];
   session: {
@@ -43,6 +46,14 @@ const userSchema = new mongoose.Schema(
     boardsJoined: [{
       type: Schema.Types.ObjectId,
       ref: 'Board',
+    }],
+    eventsOwned: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Event',
+    }],
+    eventsJoined: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Event',
     }],
     refreshTokens: {
       type: [String]

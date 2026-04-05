@@ -1,7 +1,7 @@
-import type { RecordCheckResponse } from "./FormFields";
+import type { RecordCheckResponse } from "./FormFields"
 import type { LoginResponse } from '../shared/types/api.ts'
-import type { BoardData } from "../shared/types/bingo.ts";
-import type { EventData } from "./CreateEventPage.tsx";
+import type { BoardData } from "../shared/types/bingo.ts"
+import type { EventData } from "../shared/types/events.ts"
 
 const SERVER_API_URL= 'http://localhost:3002/api'
 const fetchMethods = {
@@ -142,9 +142,20 @@ class ExpressAPI {
   createEvent = async (draftEvent: EventData): Promise<Response> => {
     const responseJSON = await this.makeApiCall(
       fetchMethods.POST,
-      'event/create-event',
+      '/event/create-event',
       { draftEvent },
       "Failed to create board"
+    )
+
+    return responseJSON
+  }
+
+    getAllEventSummariesForUser = async (): Promise<unknown> => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.GET,
+      '/event/getAllEventSummariesForUser',
+      {},
+      "Failed to get user board summaries"
     )
 
     return responseJSON

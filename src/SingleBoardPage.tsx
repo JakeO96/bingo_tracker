@@ -2,7 +2,7 @@ import { Link, useLoaderData } from "react-router";
 import { BingoBoard } from "./bingo/BingoBoard";
 
 export default function SingleBoardPage() {
-  const { record } =useLoaderData()
+  const { record } = useLoaderData()
 
   return (
     <div className="flex h-full w-full">

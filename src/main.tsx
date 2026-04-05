@@ -9,10 +9,11 @@ import { LogInPage } from './LogInPage.tsx'
 import { RegisterPage } from './RegisterPage.tsx'
 import { DashBoard } from './DashBoard.tsx'
 import expressApi from './express-api.ts'
-import { CreatedBoards } from './CreatedBoards.tsx'
 import SingleBoardPage from './SingleBoardPage.tsx'
 import EditBoardPage from './EditBoardPage.tsx'
 import CreateEventPage from './CreateEventPage.tsx'
+import AllCreatedBoardsPage from './AllCreatedBoardsPage.tsx'
+import AllCreatedEventsPage from './AllCreatedEventsPage.tsx'
 
 const router = createBrowserRouter(
   [
@@ -33,13 +34,10 @@ const router = createBrowserRouter(
         {
           path: "boards-created", 
           loader: async () => { 
-                    const records = await expressApi.getAllBoardsForUser()
-                      .then(boards => {
-                        return { records: boards}
-                      })
-                    return {records: records}   
+                    const boardSummaries = await expressApi.getAllBoardSummariesForUser()
+                    return {records: boardSummaries}   
                   },
-          element: <CreatedBoards />,
+          element: <AllCreatedBoardsPage />,
         },
         {
           path: "board/:id",
@@ -77,6 +75,14 @@ const router = createBrowserRouter(
                     return {records: boardSummaries}   
                   },
           element: <CreateEventPage />
+        },
+        {
+          path: 'events-created',
+          loader: async () => {
+              const eventSummaries = await expressApi.getAllEventSummariesForUser()
+              return {records: eventSummaries}  
+          },
+          element: <AllCreatedEventsPage />
         }
       ]
     }
