@@ -8,7 +8,7 @@ export default function SingleBoardPage() {
     <div className="flex h-full w-full">
       <div className="flex flex-col items-center justify-center">
         {record.title}
-        <BingoBoard allBoardTiles={record.tiles} />
+        <BingoBoard allBoardTiles={record.tiles} mode={"edit"} />
       </div>
       <div>
         <Link 

@@ -2,6 +2,7 @@ import { NavLink } from 'react-router';
 import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
 import { TopNav } from './NavBars';
+import { MainHeaderNavLinks } from './NavBarLinks';
 
 export const MainHeader: React.FC<object> = () => {
   const { isLoggedIn, logOut } = useContext(AuthContext);
@@ -10,7 +11,7 @@ export const MainHeader: React.FC<object> = () => {
       <div className="relative bg-[#c8c8c8] h-10 shadow-sm shadow-black/50">
         <div className="mx-20">
           <div className="flex items-center h-10">
-            <TopNav />
+            <TopNav links={MainHeaderNavLinks} />
             <div className="flex items-center flex-1 justify-end">
               {isLoggedIn ? (
                 <button type='button' onClick={logOut}>Log Out</button>

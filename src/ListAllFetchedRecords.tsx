@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-type ListRecordSummary = {
+export type ListRecordSummary = {
   id: string;
   title: string;
   updatedAt: Date;

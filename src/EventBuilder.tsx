@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import type { EventData, EventFormData } from "../shared/types/events.ts"
 import { PlainFormField } from "./FormFields";
-import type { BoardData, BoardSummary, IBoardSchema } from "../shared/types/bingo";
+import type { BoardData, IBoardSchema } from "../shared/types/bingo";
 import expressApi from "./express-api";
 import EventBoardSelector from "./EventBoardSelector";
 import EventTeamsEditor from "./EventTeamsEditor";
+import type { ListRecordSummary } from "./ListAllFetchedRecords.tsx";
 
 type EventBuilderProps = {
   event: EventFormData;
   apiFunction: (event: EventData) => void;
-  availableBoards: BoardSummary[];
+  availableBoards: ListRecordSummary[];
   preSelectedBoard: BoardData | null;
 }
 
@@ -71,12 +72,19 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
       title: eventDraft.title,
       description: eventDraft.description,
       sourceBoardId: eventDraft.sourceBoardId,
-      boardSnapshot: eventDraft.boardSnapshot,
+      boardSnapshot: null,
       startAt: startAt.toISOString(),
       endAt: endAt.toISOString(),
+      participants: [],
       teams: eventDraft.teams,
-      settings: eventDraft.settings,
-      status: eventDraft.status
+      settings: {
+        approvalMode: "admin_only",
+        joinMode: 'open_link',
+        visibility: "private",
+        globalPointsLeaderBoard: true,
+        interTeamBoardAccess: false
+      },
+      status: 'draft'
     }
     apiFunction(event)
   }

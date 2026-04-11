@@ -1,4 +1,4 @@
-import type { EventTeamData } from "./CreateEventPage"
+import type { EventTeamData } from "../shared/types/events"
 import { formInputStyles, PlainFormField } from "./FormFields";
 
 type EventTeamEditorProps = {
@@ -23,6 +23,9 @@ export default function EventTeamsEditor({ teams, onChangeTeams }: EventTeamEdit
         name: "",
         members: [],
         progress: {
+          totalPoints: 0,
+          completedGoalsCount: 0,
+          completedTilesCount: 0,
           tiles: []
         }
       }

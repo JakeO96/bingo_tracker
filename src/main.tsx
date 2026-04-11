@@ -14,6 +14,8 @@ import EditBoardPage from './EditBoardPage.tsx'
 import CreateEventPage from './CreateEventPage.tsx'
 import AllCreatedBoardsPage from './AllCreatedBoardsPage.tsx'
 import AllCreatedEventsPage from './AllCreatedEventsPage.tsx'
+import EventMainPage from './EventMainPage.tsx'
+import EventTeamPage from './EventTeamPage.tsx'
 
 const router = createBrowserRouter(
   [
@@ -83,6 +85,36 @@ const router = createBrowserRouter(
               return {records: eventSummaries}  
           },
           element: <AllCreatedEventsPage />
+        },
+        {
+          path: 'event/:id',
+          loader: async ({ params }) => {
+            const eventId = params.id
+
+            if (!eventId) {
+              throw new Error("Event id is missing")
+            }
+
+            const eventData = await expressApi.getEvent(eventId)
+            return { eventData }
+          },
+          element: <EventMainPage />
+        },
+        {
+          path: 'event/:eventId/team/:teamId',
+          loader: async ({ params }) => {
+            const eventId = params.eventId
+            const teamId = params.teamId
+
+            if(!eventId || !teamId) {
+              throw new Error("Event id or team id is missing")
+            }
+
+            const teamPageEventData = await expressApi.getEventSingleTeamData(eventId, teamId)
+
+            return {teamPageEventData }
+          },
+          element: <EventTeamPage />
         }
       ]
     }

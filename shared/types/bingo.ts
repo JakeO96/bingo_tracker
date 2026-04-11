@@ -1,4 +1,5 @@
 import type { Schema } from "mongoose";
+import type { GoalSubmission } from "./events";
 
 export type BoardGoalData = {
   id: string;
@@ -31,4 +32,26 @@ export interface IBoardSchema extends Document {
   tiles: BoardTileData[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export type GameBoardGoalData = {
+  id: string;
+  text: string;
+  points: number;
+  isComplete: boolean;
+  submissions: GoalSubmission[];
+}
+
+export type GameBoardTileData = {
+  id: string;
+  title: string;
+  isComplete: boolean;
+  goals: GameBoardGoalData[];
+  completedGoalsCount: number;
+  hasPendingSubmissions: boolean;
+}
+
+export type GameBoardData = {
+  title: string;
+  tiles: GameBoardTileData[];
 }

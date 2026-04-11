@@ -7,15 +7,15 @@ import {
   currentUser, 
   getLoggedInUsers,
 } from "../controllers/userController";
-//import { validateToken } from "../middleware/validateTokenHandler";
+import { validateUserToken } from "../middleware/validateUserTokenHandler";
 
 const userRouter = express.Router();
-userRouter.route("/").get(getAllUsers);
-userRouter.get("/current-user", /*validateToken,*/ currentUser);  
-userRouter.get("/logged-in", /*validateToken,*/ getLoggedInUsers)
+userRouter.route("/").get(validateUserToken, getAllUsers);
+userRouter.get("/current-user", validateUserToken, currentUser);  
+userRouter.get("/logged-in", validateUserToken, getLoggedInUsers)
 userRouter.route("/exists/:fieldName/:value").get(fieldExists);
 //userRouter.route("/:id").get(getUser);
-userRouter.route("/:id").put(updateUser);
-userRouter.route("/:id").delete(deleteUser);
+userRouter.route("/:id").put(validateUserToken, updateUser);
+userRouter.route("/:id").delete(validateUserToken, deleteUser);
 
-export {userRouter}
+export { userRouter }

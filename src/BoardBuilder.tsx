@@ -54,7 +54,8 @@ export default function BoardBuilder({ board, apiFunction }: BoardBuilderProps) 
       </div>
       <BingoBoard 
         allBoardTiles={boardDraft.tiles} 
-        onAddTileClick={(index: number) => setActiveTileIndex(index)} 
+        onTileClick={(index: number) => setActiveTileIndex(index)} 
+        mode={"edit"}
       />
       {activeTile && (
         <TileEditorModal

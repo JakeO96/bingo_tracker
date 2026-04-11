@@ -7,6 +7,8 @@ import Event from '../models/eventModel'
 import type { ActiveUser } from '../models/userModel'
 import dotenv from 'dotenv-safe';
 import mongoose from 'mongoose'
+import { createInitialTeamProgress } from '../utils/create-event'
+import { EventBoardSnapshot } from '../../shared/types/events'
 dotenv.config();
 
 
@@ -44,19 +46,24 @@ const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, ne
       throw new Error("The source board does not exist")
     }
 
+    const startAtDate = new Date(eventData.startAt)
+    const endAtDate = new Date(eventData.endAt)
+    const boardSnapshot: EventBoardSnapshot = {
+        boardId: eventData.sourceBoardId,
+        boardTitle: sourceBoard.title,
+        boardTiles: sourceBoard.tiles
+      }
+    const teamsWithInitializedProgress = createInitialTeamProgress(boardSnapshot, eventData.teams)
+
     const event = new Event({
       ownerId: ownerRecord._id,
       title: eventData.title,
       description: eventData.description,
       sourceBoardId: sourceBoard._id,
-      boardSnapshot: {
-        boardId: eventData.sourceBoardId,
-        boardTitle: sourceBoard.title,
-        boardTiles: sourceBoard.tiles
-      },
-      startAt: eventData.startAt,
-      endAt: eventData.endAt,
-      teams: eventData.teams,
+      boardSnapshot: boardSnapshot,
+      startAt: startAtDate,
+      endAt: endAtDate,
+      teams: teamsWithInitializedProgress,
       settings: eventData.settings,
       status: eventData.status
     })
@@ -71,6 +78,19 @@ const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, ne
 
     await User.findByIdAndUpdate(ownerRecord.id, { $push: { eventsOwned: event._id }})
     res.status(HttpStatusCode.RECORD_CREATED).json({ eventId: event._id })
+  }
+})
+
+const getEvent = asyncHandler( async (req: RequestWithUser, res: Response) => {
+  const event = await Event.findById(req.params.id);
+  console.log(`$$$firing in eventController getEvent, event id is ${req.params.id}`)
+  if(event) {
+    res.status(HttpStatusCode.SUCCESS).json(event);
+    console.log(event.toJSON())
+  } 
+  else {
+    res.status(HttpStatusCode.NOT_FOUND);
+    throw new Error("Event not found");
   }
 })
 
@@ -100,4 +120,36 @@ const getAllEventSummariesForUser = asyncHandler( async (req: RequestWithUser, r
   }
 })
 
-export { createEvent, getAllEventSummariesForUser }
+const getEventSingleTeamData = asyncHandler( async (req: RequestWithUser, res: Response) => {
+  const eventId = req.params.eventId
+  const teamId = req.params.teamId
+
+  const event = await Event.findById(eventId)
+    .select("title boardSnapshot status startAt endAt teams")
+    .lean()
+    .exec()
+
+  if (!event) {
+    res.status(HttpStatusCode.NOT_FOUND);
+    throw new Error("Event not found");
+  }
+
+  const team = event.teams.find((t) => t.id === teamId)
+
+  if (!team) {
+    res.status(HttpStatusCode.NOT_FOUND);
+    throw new Error("Team not found");
+  }
+
+  res.status(200).json({
+    eventId: eventId,
+    title: event.title,
+    boardSnapshot: event.boardSnapshot,
+    status: event.status,
+    startAt: event.startAt,
+    endAt: event.endAt,
+    team
+  })
+})
+
+export { createEvent, getEvent, getAllEventSummariesForUser, getEventSingleTeamData }

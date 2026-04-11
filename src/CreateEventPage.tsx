@@ -8,7 +8,6 @@ export default function CreateEventPage() {
     title: '',
     description: '',
     sourceBoardId: '',
-    boardSnapshot: null,
     startDate: '',
     startTime: '',
     endDate: '',
@@ -18,24 +17,25 @@ export default function CreateEventPage() {
         id: crypto.randomUUID(), 
         name: "", 
         members: [], 
-        progress: { tiles: [] }
+        progress: {
+          totalPoints: 0,
+          completedGoalsCount: 0,
+          completedTilesCount: 0,
+           tiles: [] 
+        }
       },
       {
         id: crypto.randomUUID(),
         name: "",
         members: [],
-        progress: { tiles: [] }
+        progress: { 
+          totalPoints: 0,
+          completedGoalsCount: 0,
+          completedTilesCount: 0,
+          tiles: [] 
+        }
       }
-    ],
-    settings: {
-      approvalMode: "admin_only",
-      joinMode: 'open_link',
-      visibility: "private",
-      globalPointsLeaderBoard: true,
-      interTeamBoardAccess: false
-
-    },
-    status: 'draft'
+    ]
   }
   const navigate = useNavigate()
   const { records } = useLoaderData()

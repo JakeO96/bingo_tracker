@@ -9,13 +9,13 @@ interface RequestWithUser extends Request {
   user?: string | object;
 }
 
-const validateTokenCallback = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const validateUserTokenCallback = async (req: RequestWithUser, res: Response, next: NextFunction) => {
   const token = req.cookies.token
   if (!token) {
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized '})
     return
   }
-  const secret = process.env.JWT_SECRET
+  const secret = process.env.JWT_USER_SECRET
   if (!secret) {
     res.status(HttpStatusCode.SERVER_ERROR).json({ message: 'Server misconfiguration'})
     return
@@ -53,6 +53,6 @@ const validateTokenCallback = async (req: RequestWithUser, res: Response, next: 
   }
 }
 
-const validateToken = asyncHandler(validateTokenCallback)
+const validateUserToken = asyncHandler(validateUserTokenCallback)
 
-export { validateToken }
+export { validateUserToken }

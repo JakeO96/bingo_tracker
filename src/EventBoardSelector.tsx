@@ -1,7 +1,7 @@
-import type { BoardSummary } from "../shared/types/bingo";
+import type { ListRecordSummary } from './ListAllFetchedRecords'
 
 type EventBoardSelectorProps = {
-  boards: BoardSummary[];
+  boards: ListRecordSummary[];
   value: string;
   onChange: (boardId: string) => void;
   disabled?: boolean;
@@ -39,7 +39,7 @@ export default function EventBoardSelector({
         <option value="">Choose a board</option>
 
         {boards.map((board) => (
-          <option key={board.boardId} value={board.boardId}>
+          <option key={board.id} value={board.id}>
             {board.title}
           </option>
         ))}

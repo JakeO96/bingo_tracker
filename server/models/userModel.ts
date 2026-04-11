@@ -21,7 +21,7 @@ export interface IUser extends Document {
   };
 }
 export interface ActiveUser extends IUser {
-  id?: object | string
+  id?: string
 }
 
 const userSchema = new mongoose.Schema(

@@ -22,37 +22,7 @@ const eventBoardSnapshotSchema = new Schema(
   { _id: false }
 )
 
-const participantSchema = new Schema(
-  {
-    id: {
-      type: String,
-      required: true
-    },
-    eventId: {
-      type: String,
-      required: true
-    },
-    displayName: {
-      type: String,
-      required: true
-    },
-    rsn: {
-      type: String,
-      required: true
-    },
-    teamId: {
-      type: String,
-      default: null
-    },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null
-    },
-  },
-)
-
-const goalSubmissionSchema = new Schema(
+export const goalSubmissionSchema = new Schema(
   {
     id: {
       type: String,
@@ -65,7 +35,11 @@ const goalSubmissionSchema = new Schema(
     },
     submittedByParticipantId: {
       type: String,
-      default: null
+      required: true
+    },
+    submittedByParticipantDisplayName: {
+      type: String,
+      required: true
     },
     screenshotUrls: {
       type: [String],
@@ -138,6 +112,18 @@ const teamTileProgressSchema = new Schema(
 
 const teamProgressSchema = new Schema(
   {
+    totalPoints: {
+      type: Number,
+      required: true
+    },
+    completedGoalsCount: {
+      type: Number,
+      required: true
+    },
+    completedTilesCount: {
+      type: Number,
+      required: true
+    },
     tiles: {
       type: [teamTileProgressSchema],
       required: true,
@@ -156,11 +142,6 @@ const eventTeamDataSchema = new Schema(
     name: {
       type: String,
       required: true
-    },
-    members: {
-      type: [participantSchema],
-      required: true,
-      default: []
     },
     progress: {
       type: teamProgressSchema,

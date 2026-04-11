@@ -7,6 +7,11 @@ import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
+//const ONE_YEAR = 1000 /*ms*/ * 60 /*sec*/ * 60 /*min*/ * 24 /*hr*/ * 365 /*days*/
+//ONE_MINUTE = 60 * 1_500 //for testing
+const TWO_HOURS = 2 * 60 * 60 * 1_000
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1_000
+
 //@desc Create a User
 //@route POST /api/auth/register
 //@access public
@@ -49,8 +54,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   const user = await User.findOne({ email });
 
   if(user && (await bcrypt.compare(password, user.password))) {
-    const secret = process.env.JWT_SECRET;
-    const refreshSecret = process.env.JWT_REFRESH_SECRET;
+    const secret = process.env.JWT_USER_SECRET;
+    const refreshSecret = process.env.JWT_USER_REFRESH_SECRET;
     if(secret && refreshSecret) {
       const sessionId = uuidv4();
       const accessToken = jwt.sign(
@@ -63,7 +68,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
           },
         }, 
         secret,
-        {expiresIn: "30s"}
+        {expiresIn: TWO_HOURS}
       );
 
       const refreshToken = jwt.sign(
@@ -85,11 +90,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
         endTime: null,
       };
       await user.save();
-
-      //const ONE_YEAR = 1000 /*ms*/ * 60 /*sec*/ * 60 /*min*/ * 24 /*hr*/ * 365 /*days*/
-      //ONE_MINUTE = 60 * 1_500 //for testing
-      const TWO_HOURS = 2 * 60 * 60 * 1_000
-      const ONE_WEEK = 7 * 24 * 60 * 60 * 1_000
 
       // Set the JWT and refresh token in HttpOnly cookies
       res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: TWO_HOURS})
@@ -143,7 +143,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 //@access public
 export const refresh = asyncHandler(async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
-  const refreshSecret = process.env.JWT_REFRESH_SECRET;
+  const refreshSecret = process.env.JWT_USER_REFRESH_SECRET;
   if (!refreshToken || !refreshSecret) {
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized'})
     return
@@ -157,7 +157,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
         resolve(payload as JwtPayload)
       })
     })
-    const secret = process.env.JWT_SECRET
+    const secret = process.env.JWT_USER_SECRET
     if (!secret) {
       res.status(HttpStatusCode.SERVER_ERROR).json({ message: 'There was a problem processing your request'})
       return
@@ -177,7 +177,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
         },
       }, 
       secret,
-      {expiresIn: "20m"}
+      {expiresIn: TWO_HOURS}
     );    
     // Generate a new refresh token
     const newRefreshToken = jwt.sign(

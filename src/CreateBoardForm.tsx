@@ -1,14 +1,14 @@
 import React, { /*useContext,*/ useState } from "react";
 //import { PlainFormField } from './FormFields';
 import { BingoBoard } from "./bingo/BingoBoard";
-import type { BoardData, GoalData, TileData } from "../shared/types/bingo";
+import type { BoardData, BoardGoalData, BoardTileData } from "../shared/types/bingo";
 //import { AuthContext } from "./AuthContext"
 //import expressApi from "./express-api";
 //import { useNavigate } from "react-router";
 import BoardTitleEditor from "./BoardTitleEditor";
 import TileEditorModal from "./TileEditorModal";
 
-const createEmptyGoal = (): GoalData => {
+const createEmptyGoal = (): BoardGoalData => {
   return {
     id: crypto.randomUUID(),
     text: "",
@@ -16,7 +16,7 @@ const createEmptyGoal = (): GoalData => {
   }
 }
 
-const createEmptyTile = (goalCount: number): TileData => {
+const createEmptyTile = (goalCount: number): BoardTileData => {
   return {
     id: crypto.randomUUID(),
     title: "",
@@ -24,7 +24,7 @@ const createEmptyTile = (goalCount: number): TileData => {
   }
 }
 
-const createInitialBoardTiles = (numberOfTiles: number, goalsPerTile: number): Array<TileData> => {
+const createInitialBoardTiles = (numberOfTiles: number, goalsPerTile: number): Array<BoardTileData> => {
   return Array.from({ length: numberOfTiles }, () => createEmptyTile(goalsPerTile))
 }
 
@@ -79,13 +79,14 @@ export const CreateBoardForm: React.FC<object> = () => {
       </div>
       <BingoBoard 
         allBoardTiles={boardDraft.tiles} 
-        onAddTileClick={(index: number) => setActiveTileIndex(index)} 
+        onTileClick={(index: number) => setActiveTileIndex(index)} 
+        mode="edit"
       />
       {activeTile && (
         <TileEditorModal
           tile={activeTile}
           onClose={() => setActiveTileIndex(null)}
-          onSave={(updatedTile: TileData) => {
+          onSave={(updatedTile: BoardTileData) => {
             setBoardDraft((prev) => ({
               ...prev,
               tiles: prev.tiles.map((tile, index) =>

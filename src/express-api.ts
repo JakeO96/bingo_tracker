@@ -150,12 +150,34 @@ class ExpressAPI {
     return responseJSON
   }
 
-    getAllEventSummariesForUser = async (): Promise<unknown> => {
+  getEvent = async (id: string): Promise<unknown> => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.GET,
+      `/event/${id}`,
+      {},
+      "Failed to get event"
+    )
+
+    return responseJSON
+  }
+
+  getAllEventSummariesForUser = async (): Promise<unknown> => {
     const responseJSON = await this.makeApiCall(
       fetchMethods.GET,
       '/event/getAllEventSummariesForUser',
       {},
       "Failed to get user board summaries"
+    )
+
+    return responseJSON
+  }
+
+  getEventSingleTeamData = async (eventId: string, teamId: string): Promise<unknown> => {
+    const responseJSON = await this.makeApiCall(
+      fetchMethods.GET,
+      `/event/${eventId}/team/${teamId}`,
+      {},
+      "Failed to get team data"
     )
 
     return responseJSON
