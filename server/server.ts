@@ -1,7 +1,9 @@
-import {authRouter as authRoutes} from './routes/authRoutes'
+import {userAuthRouter as userAuthRoutes} from './routes/userAuthRoutes'
 import {userRouter as userRoutes} from './routes/userRoutes'
 import {boardRouter as boardRoutes} from './routes/boardRoutes'
 import {eventRouter as eventRoutes} from './routes/eventRoutes'
+import { participantAuthRouter as participantAuthRoutes } from './routes/participantAuthRoutes'
+import { validationRouter as validationRoutes } from './routes/validationRoutes'
 import { errorHandler } from "./middleware/errorHandler"
 import { connectDb } from "./config/dbConnection"
 import express from "express"
@@ -48,10 +50,12 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth", authRoutes);
+app.use("/api/auth/user", userAuthRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/board", boardRoutes);
 app.use("/api/event", eventRoutes)
+app.use("/api/auth/participant", participantAuthRoutes)
+app.use("/api/validate", validationRoutes)
 app.use(errorHandler);
 
 const server = http.createServer(app);

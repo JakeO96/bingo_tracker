@@ -38,7 +38,10 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
       password: hashedPassword,
     });
     await user.save();
-    res.status(HttpStatusCode.RECORD_CREATED).json({success: true});
+    res.status(HttpStatusCode.RECORD_CREATED).json({
+      username: user.username,
+      email: user.email
+    });
   } catch (error) {
     res.status(HttpStatusCode.SERVER_ERROR);
     throw new Error(`Problem storing password ${error}`);
@@ -68,7 +71,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
           },
         }, 
         secret,
-        {expiresIn: TWO_HOURS}
+        {expiresIn: "15m"}
       );
 
       const refreshToken = jwt.sign(
@@ -78,7 +81,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
           },
         }, 
         refreshSecret,
-        {expiresIn: "6d"}
+        {expiresIn: "7d"}
       );
 
       // Store the refresh token in the database
@@ -92,10 +95,10 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       await user.save();
 
       // Set the JWT and refresh token in HttpOnly cookies
-      res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: TWO_HOURS})
-      res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: "none", secure: true, maxAge: ONE_WEEK})
+      res.cookie('userToken', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: TWO_HOURS})
+      res.cookie('userRefreshToken', refreshToken, { httpOnly: true, sameSite: "none", secure: true, maxAge: ONE_WEEK})
 
-      res.status(HttpStatusCode.SUCCESS).json({username: user.username})
+      res.status(HttpStatusCode.SUCCESS).json({ username: user.username })
     }
     else {
       res.status(HttpStatusCode.SERVER_ERROR)
@@ -112,7 +115,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 //@route POST /api/auth/logout
 //@access public
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  const token: string = req.cookies.refreshToken
+  const token: string = req.cookies.userRefreshToken
   
   // Get the user from the database
   const user = await User.findOne({ 'refreshTokens': token })
@@ -127,10 +130,10 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     await user.save()
 
     // Clear the token from the cookie
-    res.clearCookie('token')
-    res.clearCookie('refreshToken')
+    res.clearCookie('userToken')
+    res.clearCookie('userRefreshToken')
     
-    res.status(HttpStatusCode.SUCCESS)
+    res.status(HttpStatusCode.SUCCESS).json({ message: "the logout happened" })
   }
   else {
     res.status(HttpStatusCode.UNAUTHORIZED)
@@ -142,7 +145,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 //@route POST /api/auth/refresh
 //@access public
 export const refresh = asyncHandler(async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.cookies.userRefreshToken;
   const refreshSecret = process.env.JWT_USER_REFRESH_SECRET;
   if (!refreshToken || !refreshSecret) {
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized'})
@@ -177,7 +180,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
         },
       }, 
       secret,
-      {expiresIn: TWO_HOURS}
+      {expiresIn: "15m"}
     );    
     // Generate a new refresh token
     const newRefreshToken = jwt.sign(
@@ -187,7 +190,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
         },
       }, 
       refreshSecret,
-      {expiresIn: "6d"}
+      {expiresIn: "7d"}
     );
     user.refreshTokens = user.refreshTokens.map( rt =>
       rt === refreshToken ? newRefreshToken : rt
@@ -195,8 +198,8 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
     await user.save()
     console.log('accessToken refreshed')
     // Set the JWT and refresh token in HttpOnly cookies then success
-    res.cookie('token', accessToken, { httpOnly: true, sameSite:  "none", secure: true});
-    res.cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite:  "none", secure: true});   
+    res.cookie('userToken', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: TWO_HOURS});
+    res.cookie('userRefreshToken', newRefreshToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: ONE_WEEK});   
     res.status(HttpStatusCode.SUCCESS).json({ accessToken, refreshToken: newRefreshToken });
   } catch (err: any) {
       res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized from validateToken', error: err })

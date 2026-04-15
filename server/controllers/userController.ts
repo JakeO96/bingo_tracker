@@ -61,19 +61,6 @@ export const getUser = asyncHandler( async (req: Request, res: Response) => {
 });
 */
 
-//@desc Check if a field value already exists on a user
-//@route get /api/user/exists/:fieldName/:value
-//@access public
-export const fieldExists = asyncHandler(async (req: Request, res: Response) => {
-  const user = await User.findOne({ [req.params.fieldName]: req.params.value});
-  if (user) {
-    res.status(HttpStatusCode.SUCCESS).json({ exists: true });
-  } 
-  else {
-    res.status(HttpStatusCode.SUCCESS).json({ exists: false });
-  }
-});
-
 //@desc Update a User record
 //@route PUT /api/user/:id
 //@access public
@@ -133,5 +120,4 @@ export const deleteUser = asyncHandler( async (req: Request, res: Response) => {
 //@access private
 export const currentUser = asyncHandler(async (req: RequestWithUser, res: Response) => {
   res.status(HttpStatusCode.SUCCESS).json(req.user); 
-
 });

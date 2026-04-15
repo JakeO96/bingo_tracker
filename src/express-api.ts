@@ -1,5 +1,4 @@
 import type { RecordCheckResponse } from "./FormFields"
-import type { LoginResponse } from '../shared/types/api.ts'
 import type { BoardData } from "../shared/types/bingo.ts"
 import type { EventData } from "../shared/types/events.ts"
 
@@ -14,11 +13,11 @@ const fetchMethods = {
 
 class ExpressAPI {
 
-  // Create a User
+  /*
   createUser = async (data: object): Promise<Response> => {
     const responseJSON = await this.makeApiCall(
       fetchMethods.POST, 
-      '/auth/register', 
+      '/auth/user/register', 
       data,
       "Failed to create user"
     )
@@ -26,26 +25,27 @@ class ExpressAPI {
   }
 
   // Log a user in
-  logUserIn = async (data: object): Promise<LoginResponse> => {
+  logUserIn = async (data: object): Promise<unknown> => {
     const responseJSON = await this.makeApiCall(
       fetchMethods.POST,
-      '/auth/login', 
+      '/auth/user/login', 
       data,
       "Failed to log user in"       
     )
-    return responseJSON as LoginResponse
+    return responseJSON
   }
 
   // Log a user out
   logUserOut = async (): Promise<Response> => {
     const responseJSON = await this.makeApiCall(
       fetchMethods.POST, 
-      '/auth/logout',
+      '/auth/user/logout',
       {},
       "Failed to log user out"
     )
     return responseJSON
   }
+  */
 
   // Get a single user
   getUser = async (): Promise<unknown> => {

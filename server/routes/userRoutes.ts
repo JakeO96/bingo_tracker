@@ -1,7 +1,6 @@
 import express from "express";
 import { 
-  getAllUsers, 
-  fieldExists, 
+  getAllUsers,
   updateUser, 
   deleteUser, 
   currentUser, 
@@ -13,7 +12,6 @@ const userRouter = express.Router();
 userRouter.route("/").get(validateUserToken, getAllUsers);
 userRouter.get("/current-user", validateUserToken, currentUser);  
 userRouter.get("/logged-in", validateUserToken, getLoggedInUsers)
-userRouter.route("/exists/:fieldName/:value").get(fieldExists);
 //userRouter.route("/:id").get(getUser);
 userRouter.route("/:id").put(validateUserToken, updateUser);
 userRouter.route("/:id").delete(validateUserToken, deleteUser);

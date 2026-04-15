@@ -1,12 +1,29 @@
-const RECOVERY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+import crypto from "crypto"
+import bcrypt from "bcrypt"
+import { RECOVERY_WORDS } from "./recoveryWords"
 
-export const generateRecoveryCode = (length = 12): string => {
-  let result = ""
+export const generateRecoveryPhrase = (wordCount = 3): string => {
+  const words = []
 
-  for(let i=0; i < length; i += 1) {
-    const index = Math.floor(Math.random() * RECOVERY_ALPHABET.length)
-    result += RECOVERY_ALPHABET[index]
+  for (let i = 0; i < wordCount; i++) {
+    const index = crypto.randomInt(0, RECOVERY_WORDS.length)
+    words.push(RECOVERY_WORDS[index])
   }
 
-  return `${result.slice(0, 4)}-${result.slice(4, 8)}-${result.slice(8, 12)}`
+  return words.join("-")
+}
+
+export async function hasRecoveryPhrase(recoveryPhrase: string): Promise<string> {
+  const saltRounds = process.env.SALT_ROUNDS
+    ? parseInt(process.env.SALT_ROUNDS, 10)
+    : 10
+
+  return bcrypt.hash(recoveryPhrase, saltRounds)
+}
+
+export function normalizeRecoveryPhrase(input: string): string {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
 }

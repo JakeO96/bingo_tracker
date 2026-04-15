@@ -1,11 +1,25 @@
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import { AuthContext } from './AuthContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { TopNav } from './NavBars';
 import { MainHeaderNavLinks } from './NavBarLinks';
 
 export const MainHeader: React.FC<object> = () => {
   const { isLoggedIn, logOut } = useContext(AuthContext);
+  const navigate = useNavigate()
+  const [logOutError, setLogOutError] = useState<string>('')
+
+  const handleLogOut = async () => {
+    try {
+      setLogOutError('')
+
+      await logOut()
+      navigate('/')
+    } catch (err) {
+      console.log(err)
+      setLogOutError('LogOut failed. Please try again.')
+    }
+  }
   return (
     <header>
       <div className="relative bg-[#c8c8c8] h-10 shadow-sm shadow-black/50">
@@ -14,7 +28,12 @@ export const MainHeader: React.FC<object> = () => {
             <TopNav links={MainHeaderNavLinks} />
             <div className="flex items-center flex-1 justify-end">
               {isLoggedIn ? (
-                <button type='button' onClick={logOut}>Log Out</button>
+                <button 
+                  type='button' 
+                  className='transition-all whitespace-nowrap text-base font-medium text-teal-600 hover:text-white cursor-pointer'
+                  onClick={handleLogOut}>
+                    Log Out
+                </button>
               ) : (
                 <>
                   <NavLink 
@@ -33,6 +52,10 @@ export const MainHeader: React.FC<object> = () => {
                   </NavLink>
                 </>
               )}
+
+              {logOutError ? (
+                <p className='mt-2 text-sm text-red-600'>{logOutError}</p>
+              ) : null}
             </div>
           </div>
         </div>

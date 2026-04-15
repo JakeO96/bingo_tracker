@@ -10,7 +10,7 @@ interface RequestWithUser extends Request {
 }
 
 const validateUserTokenCallback = async (req: RequestWithUser, res: Response, next: NextFunction) => {
-  const token = req.cookies.token
+  const token = req.cookies.userToken
   if (!token) {
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized '})
     return
