@@ -40,7 +40,7 @@ const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, ne
     }
 
     await User.findByIdAndUpdate(ownerRecord._id, { $push: { boardsOwned: board._id } })
-    res.status(HttpStatusCode.RECORD_CREATED).json({boardId: board._id})
+    res.status(HttpStatusCode.RECORD_CREATED).json({boardId: board._id.toString()})
   }
 })
 
@@ -151,7 +151,7 @@ const updateBoard = asyncHandler( async (req: RequestWithUser, res: Response) =>
     throw new Error("Board not found")
   }
   console.log('firing right before returning successful update')
-  res.status(200).json(updatedBoard)
+  res.status(200).json({message: 'board updated'})
 })
 
 export { createBoard, getBoard, getAllBoardsForUser, getAllBoardSummariesForUser, updateBoard }

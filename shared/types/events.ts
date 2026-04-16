@@ -3,6 +3,22 @@ import type { BoardTileData } from './bingo.ts'
 
 import type { Participant } from './participants.ts'
 
+export type TeamPageData = {
+  eventId: string;
+  title: string;
+  boardSnapshot: EventBoardSnapshot;
+  status: EventStatus;
+  startAt: string;
+  endAt: string;
+  team: EventTeamData;
+}
+
+export type EventSummary = {
+  id: string;
+  title: string;
+  updatedAt: string;
+  createdAt: string;
+}
 
 export type EventStatus = "draft" | "open" | "started" | "ended";
 

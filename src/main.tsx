@@ -8,7 +8,7 @@ import CreateBoardPage from './CreateBoardPage.tsx'
 import { LogInPage } from './LogInPage.tsx'
 import { RegisterPage } from './RegisterPage.tsx'
 import { DashBoard } from './DashBoard.tsx'
-import expressApi from './express-api.ts'
+import { expressApi } from './express-api/index.ts'
 import SingleBoardPage from './SingleBoardPage.tsx'
 import EditBoardPage from './EditBoardPage.tsx'
 import CreateEventPage from './CreateEventPage.tsx'
@@ -36,7 +36,7 @@ const router = createBrowserRouter(
         {
           path: "boards-created", 
           loader: async () => { 
-                    const boardSummaries = await expressApi.getAllBoardSummariesForUser()
+                    const boardSummaries = await expressApi.boards.getAllBoardSummariesForUser()
                     return {records: boardSummaries}   
                   },
           element: <AllCreatedBoardsPage />,
@@ -50,7 +50,7 @@ const router = createBrowserRouter(
                       throw new Error("Board id is missing")
                     }
 
-                    const board = await expressApi.getBoard(boardId)
+                    const board = await expressApi.boards.getBoard(boardId)
                     return { record: board}
                   },
           element: <SingleBoardPage />
@@ -63,7 +63,7 @@ const router = createBrowserRouter(
               throw new Error("Board id is missing")
             }
 
-            const board = await expressApi.getBoard(boardId)
+            const board = await expressApi.boards.getBoard(boardId)
             return { record: board }
           },
           element: <EditBoardPage />
@@ -71,7 +71,7 @@ const router = createBrowserRouter(
         {
           path: 'create-event',
           loader: async () => { 
-                    const boardSummaries = await expressApi.getAllBoardSummariesForUser()
+                    const boardSummaries = await expressApi.boards.getAllBoardSummariesForUser()
                     console.log('in the loader to CreateEventPage, boardSummaries vvv')
                     console.log(boardSummaries)
                     return {records: boardSummaries}   
@@ -81,7 +81,7 @@ const router = createBrowserRouter(
         {
           path: 'events-created',
           loader: async () => {
-              const eventSummaries = await expressApi.getAllEventSummariesForUser()
+              const eventSummaries = await expressApi.events.getAllEventSummariesForUser()
               return {records: eventSummaries}  
           },
           element: <AllCreatedEventsPage />
@@ -95,7 +95,7 @@ const router = createBrowserRouter(
               throw new Error("Event id is missing")
             }
 
-            const eventData = await expressApi.getEvent(eventId)
+            const eventData = await expressApi.events.getEvent(eventId)
             return { eventData }
           },
           element: <EventMainPage />
@@ -110,7 +110,7 @@ const router = createBrowserRouter(
               throw new Error("Event id or team id is missing")
             }
 
-            const teamPageEventData = await expressApi.getEventSingleTeamData(eventId, teamId)
+            const teamPageEventData = await expressApi.events.getEventSingleTeamData({ eventId, teamId })
 
             return {teamPageEventData }
           },

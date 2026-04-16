@@ -1,7 +1,7 @@
 import { useLoaderData, useNavigate } from "react-router";
 import type { BoardData } from "../shared/types/bingo";
 import BoardBuilder from "./BoardBuilder";
-import expressApi from "./express-api";
+import { expressApi } from "./express-api";
 
 export default function EditBoardPage() {
   const navigate = useNavigate()
@@ -18,7 +18,7 @@ export default function EditBoardPage() {
       console.log('api function passed to boardbuilder before api call firing, board id below and updates')
       console.log(boardId)
       console.log(updates)
-      await expressApi.updateBoard(boardId, updates)
+      await expressApi.boards.updateBoard({ boardId, updates })
       console.log('api function passed to boardbuilder after api call firing')
       navigate(`/board/${boardId}`)
     } catch (error) {

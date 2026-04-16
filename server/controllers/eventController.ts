@@ -77,7 +77,7 @@ const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, ne
     }
 
     await User.findByIdAndUpdate(ownerRecord.id, { $push: { eventsOwned: event._id }})
-    res.status(HttpStatusCode.RECORD_CREATED).json({ eventId: event._id })
+    res.status(HttpStatusCode.RECORD_CREATED).json({ eventId: event._id.toString() })
   }
 })
 
@@ -141,7 +141,7 @@ const getEventSingleTeamData = asyncHandler( async (req: RequestWithUser, res: R
     throw new Error("Team not found");
   }
 
-  res.status(200).json({
+  const teamPageData = {
     eventId: eventId,
     title: event.title,
     boardSnapshot: event.boardSnapshot,
@@ -149,7 +149,9 @@ const getEventSingleTeamData = asyncHandler( async (req: RequestWithUser, res: R
     startAt: event.startAt,
     endAt: event.endAt,
     team
-  })
+  }
+
+  res.status(200).json(teamPageData)
 })
 
 export { createEvent, getEvent, getAllEventSummariesForUser, getEventSingleTeamData }

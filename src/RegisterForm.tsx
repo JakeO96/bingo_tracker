@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react';
 import { Navigate, Link } from 'react-router';
 import { ValidatedFormField, ServerValidatedFormField } from './FormFields';
 import { AuthContext } from './AuthContext';
-import { api } from './api';
+import { expressApi } from './express-api';
 
 type Fields = {
   username: string;
@@ -28,8 +28,8 @@ export const RegisterForm: React.FC<object> = () => {
   const [_saveStatus, setSaveStatus] = useState<string>('READY');
   const { register } = useContext(AuthContext)
 
-  const validateUserAvailability = async ({ fieldName, value}: { fieldName: string, value:string }) => {
-    return api.validation.checkAvailability({
+  const validateUserAvailability = async ({ fieldName, value}: { fieldName: string, value: string }) => {
+    return expressApi.validation.checkAvailability({
       entity: 'user',
       field: fieldName,
       value: value

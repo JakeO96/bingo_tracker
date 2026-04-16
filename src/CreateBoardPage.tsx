@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import type { BoardData, BoardGoalData, BoardTileData } from "../shared/types/bingo";
 import  BoardBuilder from "./BoardBuilder";
-import expressApi from "./express-api";
+import { expressApi } from "./express-api";
 
 const createEmptyGoal = (): BoardGoalData => {
   return {
@@ -32,7 +32,7 @@ export default function CreateBoardPage() {
   
   const handleCreateBoard = async (boardDraft: BoardData) => {
     try {
-      await expressApi.createBoard({ 
+      await expressApi.boards.createBoard({ 
         title: boardDraft.title,
         tiles: boardDraft.tiles, 
       })

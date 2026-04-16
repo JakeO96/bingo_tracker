@@ -1,6 +1,6 @@
 import type { EventData, EventFormData } from '../shared/types/events.ts';
 import Eventbuilder from "./EventBuilder";
-import expressApi from "./express-api";
+import { expressApi } from "./express-api";
 import { useLoaderData, useNavigate } from "react-router";
 
 export default function CreateEventPage() {
@@ -46,7 +46,7 @@ export default function CreateEventPage() {
     try{
       console.log('in the handleCreateEvent on the createevent page draftEvent VVVV')
       console.log(draftEvent)
-      await expressApi.createEvent(draftEvent)
+      await expressApi.events.createEvent(draftEvent)
       navigate('/events-created')
     } catch(error) {
       console.error("Failed to create board", error)

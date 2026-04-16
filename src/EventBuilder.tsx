@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { EventData, EventFormData } from "../shared/types/events.ts"
 import { formInputStyles, PlainFormField } from "./FormFields";
 import type { BoardData, IBoardSchema } from "../shared/types/bingo";
-import expressApi from "./express-api";
+import { expressApi } from "./express-api";
 import EventBoardSelector from "./EventBoardSelector";
 import EventTeamsEditor from "./EventTeamsEditor";
 import type { ListRecordSummary } from "./ListAllFetchedRecords.tsx";
@@ -46,7 +46,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
     try {
       setIsLoadingBoard(true)
 
-      const boardRecord: IBoardSchema = await expressApi.getBoard(boardId) as IBoardSchema
+      const boardRecord: IBoardSchema = await expressApi.boards.getBoard(boardId) as IBoardSchema
       const board = {
         title: boardRecord.title,
         tiles: boardRecord.tiles

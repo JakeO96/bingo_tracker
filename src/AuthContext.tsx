@@ -1,7 +1,7 @@
 /* eslint-disable no-constant-binary-expression */
 import { createContext, useState } from 'react';
 import type { CreateUserRequest, LogInRequest, LogInResponse, LogOutResponse } from '../shared/types/api/userAuth';
-import { api } from './api';
+import { expressApi } from './express-api';
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logIn = async (fields: LogInRequest) => {
     try {
-      const data: LogInResponse = await api.userAuth.logUserIn(fields);
+      const data: LogInResponse = await expressApi.userAuth.logUserIn(fields);
       console.log(data)
 
       if (data.username) {
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logOut = async () => {
-    const res = await api.userAuth.logUserOut()
+    const res = await expressApi.userAuth.logUserOut()
 
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('username');
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (fields: CreateUserRequest) => {
     try {
-      const res = await api.userAuth.createUser(fields)
+      const res = await expressApi.userAuth.createUser(fields)
       console.log(res)
       return true;
     } catch (err) {
