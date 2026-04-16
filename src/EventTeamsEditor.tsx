@@ -1,5 +1,5 @@
 import type { EventTeamData } from "../shared/types/events"
-import { formInputStyles, PlainFormField } from "./FormFields";
+import { PlainFormField } from "./FormFields";
 
 type EventTeamEditorProps = {
   teams: EventTeamData[];
@@ -60,7 +60,6 @@ export default function EventTeamsEditor({ teams, onChangeTeams }: EventTeamEdit
               value={team.name}
               onChange={({ value }) => handleTeamNameChange(team.id, value)}
               placeholder={`Team ${index + 1}`}
-              styles={formInputStyles}
             />
 
             {teams.length > 2 && (

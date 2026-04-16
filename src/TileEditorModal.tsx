@@ -25,8 +25,7 @@ export default function TileEditorModal({
   onSave
 }: TileEditorModalProps) {
   const [fields, setFields] = useState<Fields>({title: tile.title, goals: tile.goals})
-  const formInputStyles = "h-11 p-1 bg-white border border-gray-400 w-full focus:outline-none focus:border-gray-700 focus:ring-1 focus:ring-gray-300"
-
+  
   const onInputChange = ({ name, value }: InputObject): void => {
     setFields(prev => ({ ...prev, [name]: value }));
   }
@@ -71,7 +70,7 @@ export default function TileEditorModal({
                     type={'text'} 
                     name={'title'} 
                     placeholder={'Add Title'} 
-                    styles={`input[type='text'] ${formInputStyles}`}
+                    inputClassName={`input[type='text']`}
                     value={fields.title}
                     onChange={onInputChange}
                     required={false}
@@ -84,7 +83,7 @@ export default function TileEditorModal({
                       type={'text'} 
                       name={'goalText'} 
                       placeholder={'Add Goal'} 
-                      styles={`input[type='text'] ${formInputStyles}`}
+                      inputClassName={`input[type='text']`}
                       value={fields.goals[0].text}
                       onChange={({ value }) => updateGoals(0, "text", value)}
                       required={false}
@@ -96,7 +95,7 @@ export default function TileEditorModal({
                       type={'number'}
                       name={'goalPoints'} 
                       placeholder={''} 
-                      styles={`input[type='number'] ${formInputStyles} text-center !w-12 rounded-md`}
+                      inputClassName={`input[type='number'] text-center !w-12 rounded-md`}
                       value={String(fields.goals[0].points ?? '')}
                       onChange={({ value }) => updateGoals(0, "points", Number(value))}
                       required={false}
@@ -110,7 +109,7 @@ export default function TileEditorModal({
                       type={'text'} 
                       name={'goaltext'} 
                       placeholder={'Add Goal'} 
-                      styles={`input[type='text'] ${formInputStyles}`}
+                      inputClassName={`input[type='text']`}
                       value={fields.goals[1].text}
                       onChange={({ value }) => updateGoals(1, "text", value)}
                       required={false}
@@ -122,7 +121,7 @@ export default function TileEditorModal({
                       type={'number'} 
                       name={'goalPoints'} 
                       placeholder={''} 
-                      styles={`input[type='number'] ${formInputStyles} text-center !w-12 rounded-md`}
+                      inputClassName={`input[type='number'] text-center !w-12 rounded-md`}
                       value={String(fields.goals[1].points ?? '')}
                       onChange={({ value }) => updateGoals(1, "points", Number(value))}
                       required={false}
@@ -136,7 +135,7 @@ export default function TileEditorModal({
                       type={'text'} 
                       name={'goaltext'} 
                       placeholder={'Add Goal'} 
-                      styles={`input[type='text'] ${formInputStyles}`}
+                      inputClassName={`input[type='text']`}
                       value={fields.goals[2].text}
                       onChange={({ value }) => updateGoals(2, "text", value)}
                       required={false}
@@ -148,7 +147,7 @@ export default function TileEditorModal({
                       type={'number'} 
                       name={'goalPoints'} 
                       placeholder={''} 
-                      styles={`input[type='number'] ${formInputStyles} text-center !w-12 rounded-md`}
+                      inputClassName={`input[type='number'] text-center !w-12 rounded-md`}
                       value={String(fields.goals[2].points ?? '')}
                       onChange={({ value }) => updateGoals(2, "points", Number(value))}
                       required={false}

@@ -1,10 +1,6 @@
-import React, { /*useContext,*/ useState } from "react";
-//import { PlainFormField } from './FormFields';
+import React, { useState } from "react";
 import { BingoBoard } from "./bingo/BingoBoard";
 import type { BoardData, BoardGoalData, BoardTileData } from "../shared/types/bingo";
-//import { AuthContext } from "./AuthContext"
-//import expressApi from "./express-api";
-//import { useNavigate } from "react-router";
 import BoardTitleEditor from "./BoardTitleEditor";
 import TileEditorModal from "./TileEditorModal";
 

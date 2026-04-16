@@ -62,7 +62,7 @@ export default function BoardTitleEditor({
         type={'text'}
         name={'board title'}
         placeholder="Untitled Board"
-        styles="bg-transparent text-center text-2xl font-bold outline-none border-b border-gray-400 px-2"
+        inputClassName="bg-transparent text-center text-2xl font-bold outline-none border-b border-gray-400 px-2"
         value={draftTitle}
         required={false}
         onChange={({ value }) => setDraftTitle(value)}

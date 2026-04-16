@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { EventData, EventFormData } from "../shared/types/events.ts"
-import { PlainFormField } from "./FormFields";
+import { formInputStyles, PlainFormField } from "./FormFields";
 import type { BoardData, IBoardSchema } from "../shared/types/bingo";
 import expressApi from "./express-api";
 import EventBoardSelector from "./EventBoardSelector";
@@ -25,7 +25,6 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
   const [selectedBoard, setSelectedBoard] = useState<BoardData | null>(preSelectedBoard)
   const [isLoadingBoard, setIsLoadingBoard] = useState<boolean>(false)
   const [boardLoadError, setBoardLoadError] = useState<string | null>(null)
-  const formInputStyles = "h-11 p-1 bg-white border border-gray-400 w-full focus:outline-none focus:border-gray-700 focus:ring-1 focus:ring-gray-300"
 
   const onInputChange = ({ name, value }: InputObject): void => {
     setEventDraft(prev => ({ ...prev, [name]: value }));
@@ -99,7 +98,7 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
           value={eventDraft.title}
           placeholder='Enter title of event'
           onChange={onInputChange}
-          styles={`input[type='text'] ${formInputStyles}`}
+          inputClassName={`input[type='text']`}
         />
         <div>
           <h2>Event Description</h2>

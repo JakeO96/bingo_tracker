@@ -51,7 +51,7 @@ const BaseFormField = forwardRef<HTMLInputElement, BaseFormFieldProps>(
     {
       error,
       containerClassName = 'w-full',
-      inputClassName = formInputStyles,
+      inputClassName,
       required,
       ...inputProps
     },
@@ -65,7 +65,7 @@ const BaseFormField = forwardRef<HTMLInputElement, BaseFormFieldProps>(
           <input
             ref={ref}
             {...inputProps}
-            className={inputClassName}
+            className={`${formInputStyles} ${inputClassName ?? ''}`}
           />
 
           {required ? (

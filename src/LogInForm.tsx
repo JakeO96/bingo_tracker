@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { Link, Navigate } from 'react-router'
 import isEmail from 'validator/lib/isEmail';
 import { AuthContext } from './AuthContext';
-import { ValidateFormField, PlainFormField } from './FormFields';
+import { ValidatedFormField, PlainFormField } from './FormFields';
 
 type Field = {
   email: string;
@@ -54,11 +54,11 @@ export const LogInForm: React.FC<object> = () => {
         Log In
       </h2>
       <form onSubmit={onFormSubmit} >
-        <ValidateFormField
+        <ValidatedFormField
           type={'text'} 
           name={'email'} 
           placeholder={'E-mail address'} 
-          styles={"input[type='email'] w-full"}
+          inputClassName={"input[type='email'] w-full"}
           onChange={onInputChange}
           value={fields.email}
           validate={(val: string) => isEmail(val) ? undefined : "Enter an e-mail address"}
@@ -68,7 +68,7 @@ export const LogInForm: React.FC<object> = () => {
           type={'text'} 
           name={'password'} 
           placeholder={'Password'} 
-          styles={"input[type='password'] w-full"}
+          inputClassName={"input[type='password'] w-full"}
           onChange={onInputChange}
           value={fields.password}
           required={true}

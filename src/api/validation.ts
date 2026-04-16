@@ -1,5 +1,4 @@
-import type { CheckAvailabilityRequest } from "../../shared/types/api/validation"
-import type { RecordCheckResponse } from "../FormFields"
+import type { CheckAvailabilityRequest, CheckAvailabilityResponse } from "../../shared/types/api/validation"
 import { makeApiCall } from "./client"
 
 const checkAvailability = async ({
@@ -7,8 +6,8 @@ const checkAvailability = async ({
   field, 
   value, 
   scope = undefined
-}: CheckAvailabilityRequest): Promise<RecordCheckResponse> => 
-  makeApiCall<RecordCheckResponse>(
+}: CheckAvailabilityRequest): Promise<CheckAvailabilityResponse> => 
+  makeApiCall<CheckAvailabilityResponse>(
     'POST',
     '/validate/availability',
     {
