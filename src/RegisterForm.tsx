@@ -2,9 +2,9 @@
 import isEmail from 'validator/lib/isEmail';
 import React, { useContext, useState } from 'react';
 import { Navigate, Link } from 'react-router';
-import { ValidateFormField, ServerConnectedFormField } from './FormFields';
+import { ValidatedFormField, ServerValidatedFormField } from './FormFields';
 import { AuthContext } from './AuthContext';
-import expressApi from './express-api';
+import { api } from './api';
 
 type Fields = {
   username: string;
@@ -27,6 +27,14 @@ export const RegisterForm: React.FC<object> = () => {
   const [fieldErrors, setFieldErrors] = useState<Errors>({});
   const [_saveStatus, setSaveStatus] = useState<string>('READY');
   const { register } = useContext(AuthContext)
+
+  const validateUserAvailability = async ({ fieldName, value}: { fieldName: string, value:string }) => {
+    return api.validation.checkAvailability({
+      entity: 'user',
+      field: fieldName,
+      value: value
+    })
+  }
 
   const missingRequiredFields = (): boolean => {
     const errMessages = Object.keys(fieldErrors).filter(k => fieldErrors[k]);
@@ -57,33 +65,33 @@ export const RegisterForm: React.FC<object> = () => {
         Create A New Account
       </h2>
       <form onSubmit={onFormSubmit}>
-        <ServerConnectedFormField
+        <ServerValidatedFormField
           type={'text'} 
           name={'email'} 
           placeholder={'E-mail address'} 
-          styles={"input[type='email'] w-full"}
+          inputClassName={"input[type='email'] w-full"}
           onChange={onInputChange}
           value={fields.email}
           validate={(val: string) => isEmail(val) ? undefined : "Enter an e-mail address"}
-          serverFunction={expressApi.fieldExistsInDB}
+          serverValidator={validateUserAvailability}
           required={true}
         />
-        <ServerConnectedFormField 
+        <ServerValidatedFormField 
           type={'text'} 
           name={'username'} 
           placeholder={'Username'} 
-          styles={"input[type='text'] w-full"}
+          inputClassName={"input[type='text'] w-full"}
           onChange={onInputChange}
           value={fields.username}
           validate={() => undefined}
-          serverFunction={expressApi.fieldExistsInDB}
+          serverValidator={validateUserAvailability}
           required={true}
         />
-        <ValidateFormField
+        <ValidatedFormField
           type={'password'} 
           name={'password'} 
           placeholder={'Password'} 
-          styles={"input[type='password'] w-full"}
+          inputClassName={"input[type='password'] w-full"}
           onChange={onInputChange}
           value={fields.password}
           validate={() => undefined} //TODO: add password validation

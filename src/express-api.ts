@@ -1,4 +1,3 @@
-import type { RecordCheckResponse } from "./FormFields"
 import type { BoardData } from "../shared/types/bingo.ts"
 import type { EventData } from "../shared/types/events.ts"
 
@@ -46,7 +45,7 @@ class ExpressAPI {
     return responseJSON
   }
   */
-
+  /*
   // Get a single user
   getUser = async (): Promise<unknown> => {
     const responseJSON = await this.makeApiCall(
@@ -79,6 +78,7 @@ class ExpressAPI {
     )
     return responseJSON as RecordCheckResponse
   }
+  */
   
 
   // Create a new Bingo Board
