@@ -32,12 +32,12 @@ export default function CreateBoardPage() {
   
   const handleCreateBoard = async (boardDraft: BoardData) => {
     try {
-      await expressApi.boards.createBoard({ 
+      const newBoard = await expressApi.boards.createBoard({ 
         title: boardDraft.title,
         tiles: boardDraft.tiles, 
       })
 
-      navigate("/boards-created")
+      navigate(`/board/${newBoard.boardId}`)
     } catch (error) {
       console.error("Error creating board", error)
     }

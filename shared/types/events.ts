@@ -65,10 +65,19 @@ export type EventTeamData = {
 
 export type EventSettings = {
   approvalMode: "admin_only" | "auto";
-  joinMode: "open_link" | "team_link";
+  joinMode: "general_link" | "team_link";
   visibility: "private" | "public";
+  isJoinOpen: boolean;
+  requirePasswordToJoin: boolean;
   globalPointsLeaderBoard: boolean;
   interTeamBoardAccess: boolean;
+}
+
+export type EventInviteData = {
+  joinPasswordHash: string | null;
+  generalJoinToken: string | null;
+  teamJoinTokens: { teamId: string; token: string }[] | null;
+  lastRotatedAt: Date | null;
 }
 
 export type EventBoardSnapshot = {
@@ -86,6 +95,8 @@ export type EventFormData = {
   endDate: string;
   endTime: string;
   teams: EventTeamData[];
+  requirePasswordToJoin: boolean;
+  joinPassword: string;
 }
 
 export type EventData = {
@@ -98,6 +109,7 @@ export type EventData = {
   participants: Participant[];
   teams: EventTeamData[];
   settings: EventSettings;
+  inviteData: EventInviteData;
   status: EventStatus;
 }
 
@@ -112,6 +124,7 @@ export interface IEventSchema extends Document {
   endAt: Date;
   teams: EventTeamData[];
   settings: EventSettings;
+  inviteData: EventInviteData;
   status: EventStatus;
   createdAt: Date;
   updatedAt: Date;

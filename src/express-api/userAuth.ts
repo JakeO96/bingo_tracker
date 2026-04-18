@@ -1,12 +1,12 @@
-import type { CreateUserRequest, CreateUserResponse, LogInRequest, LogInResponse, LogOutResponse } from "../../shared/types/api/userAuth"
+import type { CreateUserRequest, CreateUserResponse, LogInRequest, LogInResponse} from "../../shared/types/express-api/userAuth"
 import { makeApiCall } from "./client"
 
 const createUser = (data: CreateUserRequest): Promise<CreateUserResponse> => 
     makeApiCall<CreateUserResponse>(
       'POST', 
       '/auth/user/register', 
-      data,
-      "Failed to create user"
+      "Failed to create user",
+      data
     )
 
   // Log a user in
@@ -14,18 +14,26 @@ const createUser = (data: CreateUserRequest): Promise<CreateUserResponse> =>
     makeApiCall<LogInResponse>(
       'POST',
       '/auth/user/login', 
-      data,
-      "Failed to log user in"       
+      "Failed to log user in",
+      data       
     )
 
   // Log a user out
-  const logUserOut = (): Promise<LogOutResponse> => 
-    makeApiCall<LogOutResponse>(
+  const logUserOut = (): Promise<void> => 
+    makeApiCall<void>(
       'POST', 
       '/auth/user/logout',
-      {},
       "Failed to log user out"
     )
+
+  export const tryTokenRefresh = async (apiUrl: string) =>
+    fetch(
+        `${apiUrl}/auth/user/refresh`, 
+        { 
+          method: 'POST', 
+          credentials: 'include' 
+        }
+      )
 
   export const userAuthApi = {
     createUser,

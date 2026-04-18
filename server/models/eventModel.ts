@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { IEventSchema } from "../../shared/types/events"
 import { tileSchema } from "./boardModel";
+import { string } from "zod";
 
 const eventBoardSnapshotSchema = new Schema(
   {
@@ -161,12 +162,20 @@ const eventSettingsSchema = new Schema(
     },
     joinMode: {
       type: String,
-      enum: ["open_link", "team_link"],
+      enum: ["general_link", "team_link"],
       required: true
     },
     visibility: {
       type: String,
       enum: ["private", "public"],
+      required: true
+    },
+    isJoinOpen: {
+      type: Boolean,
+      required: true
+    },
+    requirePasswordToJoin: {
+      type: Boolean,
       required: true
     },
     globalPointsLeaderBoard: {
@@ -177,6 +186,36 @@ const eventSettingsSchema = new Schema(
       type: Boolean,
       required: true
     },
+  },
+  { _id: false }
+)
+
+const eventInviteDataSchema = new mongoose.Schema(
+  {
+    joinPasswordHash: {
+      type: String,
+      default: null
+    },
+    generalJoinToken: {
+      type: String,
+      default: null,
+      uniqe: true,
+      index: true
+    },
+    teamJoinTokens: {
+      type: [
+        {
+          teamId: { type: string, required: true },
+          token: { type: String, required: true},
+          _id: false
+        }
+      ],
+      default: null
+    },
+    lastRotatedAt: {
+      type: Date,
+      default: null
+    }
   },
   { _id: false }
 )
@@ -221,6 +260,10 @@ const eventSchema = new mongoose.Schema(
     settings: {
       type: eventSettingsSchema,
       required: true,
+    },
+    inviteData: {
+      type: eventInviteDataSchema,
+      required: true
     },
     status: {
       type: String,

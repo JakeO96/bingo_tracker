@@ -4,7 +4,7 @@ import { HttpStatusCode } from '../constants'
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   const statusCode = res.statusCode ? res.statusCode : HttpStatusCode.SERVER_ERROR;
   switch (statusCode) {
-    case HttpStatusCode.VALIDATION_ERROR:
+    case HttpStatusCode.BAD_REQUEST:
       res.status(statusCode).json( { title: "Validation Failed", message: err.message, stackTrace: err.stack, });
       break;
     case HttpStatusCode.UNAUTHORIZED:

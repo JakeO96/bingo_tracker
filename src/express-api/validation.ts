@@ -1,4 +1,4 @@
-import type { CheckAvailabilityRequest, CheckAvailabilityResponse } from "../../shared/types/api/validation"
+import type { CheckAvailabilityRequest, CheckAvailabilityResponse } from "../../shared/types/express-api/validation"
 import { makeApiCall } from "./client"
 
 const checkAvailability = async ({
@@ -10,13 +10,13 @@ const checkAvailability = async ({
   makeApiCall<CheckAvailabilityResponse>(
     'POST',
     '/validate/availability',
+    "Failed to check availability of record",
     {
       entity,
       field,
       value,
       scope
-    },
-    "Failed to check availability of record"
+    }
   )
 
 export const validationApi = {

@@ -85,7 +85,7 @@ const validateParticipantTokenCallback = async (
     next()
   } catch (err) {
     if (err instanceof TokenExpiredError) {
-      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Participant session has expired" })
+      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Session has expired' })
       return
     }
 

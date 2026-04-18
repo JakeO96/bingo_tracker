@@ -1,5 +1,5 @@
 import { makeApiCall } from "./client"
-import type { GetLoggedInUsersResponse } from "../../shared/types/api/users"
+import type { GetLoggedInUsersResponse } from "../../shared/types/express-api/users"
 
 // Get a single user
 /*const getUser = async (): Promise<GetUserResponse> =>
@@ -15,12 +15,11 @@ const getLoggedInUsers = async (): Promise<GetLoggedInUsersResponse> =>
   makeApiCall<GetLoggedInUsersResponse>(
     'GET', 
     '/user/logged-in',
-    {},
     "Failed to get all users currently logged in"
   )
 
 
 export const usersApi = {
-  getLoggedInUsers: getLoggedInUsers,
+  getLoggedInUsers,
 }
 

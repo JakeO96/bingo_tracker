@@ -5,7 +5,10 @@ import { ActiveUser } from "../models/userModel";
 import Participant from "../models/participantModel"
 import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import { generateRecoveryPhrase, hasRecoveryPhrase } from '../utils/join-event';
+import { generateRecoveryPhrase, hashRecoveryPhrase } from '../utils/join-event';
+import Event from '../models/eventModel'
+import bcrypt from 'bcrypt'
+
 
 //const ONE_YEAR = 1000 /*ms*/ * 60 /*sec*/ * 60 /*min*/ * 24 /*hr*/ * 365 /*days*/
 //ONE_MINUTE = 60 * 1_500 //for testing
@@ -17,26 +20,57 @@ interface RequestWithUser extends Request {
 }
 
 export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Response) => {
-  const { eventId, displayName, /*inviteCode*/ } = req.body
+  const { displayName, joinPassword, joinToken } = req.body
+  console.log(displayName, joinPassword, joinToken)
 
-  if (!eventId) {
+  if (!joinToken) {
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "User not authorized" })
     return
   }
   if(!displayName || displayName.trim() === "") {
-    res.status(HttpStatusCode.VALIDATION_ERROR).json({ message: "User must choose a valid display name" })
+    res.status(HttpStatusCode.BAD_REQUEST).json({ message: "User must choose a valid display name" })
+    return
+  }
+
+  const event = await Event.findOne({ 
+    "inviteData.generalJoinToken": joinToken 
+  })
+  if (!event) {
+    res.status(HttpStatusCode.NOT_FOUND).json({ message: "Invalid or expired join link"})
+    return
+  }
+  /*if(!event.settings.isJoinOpen || event.status === 'ended' || event.status === 'draft') {
+    res.status(HttpStatusCode.FORBIDDEN).json({ message: "Event is currently closed to new participants "})
+    return
+  }*/
+  if(event.settings.requirePasswordToJoin) {
+    if( !joinPassword) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({ message: "No Password was sent"})
+      return
+    }
+
+    if (!event.inviteData.joinPasswordHash) {
+      res.status(HttpStatusCode.SERVER_ERROR).json({ message: "Event join password is misconfigured"})
+      return
+    }
+
+    const correctPassword = await bcrypt.compare(joinPassword, event.inviteData.joinPasswordHash)
+    if (!correctPassword) {
+      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Invalid join password" })
+      return
+    }
   }
 
   const now = new Date()
 
   const recoveryPhrase = generateRecoveryPhrase(3)
-  const recoveryCodeHash = await hasRecoveryPhrase(recoveryPhrase)
+  const recoveryCodeHash = await hashRecoveryPhrase(recoveryPhrase)
 
   const session = {
     sessionId: uuidv4(),
     createdAt: now,
     lastSeenAt: now,
-    expiresAt: new Date(now.getTime() + ONE_WEEK + ONE_WEEK),
+    expiresAt: new Date(now.getTime() + ONE_WEEK),
     revokedAt: null,
     ip: req.ip ?? null,
     userAgent: req.get("user-agant") ?? null
@@ -44,7 +78,7 @@ export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Respons
 
   const participant = {
     id: uuidv4(),
-    eventId: eventId,
+    eventId: event._id,
     teamId: null,
     userId: req.user?.id ?? null,
     displayName: displayName,
@@ -75,7 +109,7 @@ export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Respons
     {
       participant: {
         participantId: participant.id,
-        eventId: eventId,
+        eventId: event._id,
         essionId: session.sessionId
       }
     },
@@ -87,7 +121,7 @@ export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Respons
     {
       participant: {
         participantId: participant.id,
-        eventId: eventId,
+        eventId: event._id,
         sessionId: session.sessionId
       }
     },
@@ -114,11 +148,10 @@ export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Respons
   res.status(HttpStatusCode.SUCCESS).json({
     participant: {
       id: participant.id,
-      eventId: eventId,
+      eventId: event._id,
       teamId: participant.teamId,
       userId: participant.userId,
       displayName: participant.displayName,
-      role: participant.role
     },
     recoveryPhrase
   })
@@ -228,9 +261,7 @@ export const refreshParticipant = asyncHandler( async (req: Request, res: Respon
       maxAge: ONE_WEEK
     })
 
-    res.status(HttpStatusCode.SUCCESS).json({
-      success: true
-    })
+    res.sendStatus(HttpStatusCode.NO_CONTENT)
   } catch (error) {
     console.log("refreshParticipant error:", error)
     res.clearCookie("participantToken")
@@ -247,4 +278,30 @@ export const refreshParticipant = asyncHandler( async (req: Request, res: Respon
       message: "Participant not authorized"
     })
   }
+})
+
+export const getJoinEventPageData = asyncHandler( async (req: Request, res: Response ) => {
+  const joinToken = req.params.joinToken
+
+  if (!joinToken) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Join token is required"})
+    return
+  }
+
+  const joinEventData = await Event.findOne({ "inviteData.generalJoinToken": joinToken })
+    .select("settings.requirePasswordToJoin title")
+    .lean()
+
+  if (!joinEventData) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({ message: "JoinToken invalid"})
+    return
+  }
+
+  console.log(joinEventData)
+
+  res.status(HttpStatusCode.SUCCESS).json({
+    title: joinEventData.title,
+    requirePasswordToJoin: joinEventData.settings.requirePasswordToJoin
+  }) 
+  return
 })

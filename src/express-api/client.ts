@@ -1,13 +1,16 @@
-  const SERVER_API_URL= 'http://localhost:3002/api'
+import { tryTokenRefresh } from "./userAuth";
 
-  type FetchMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+
+const SERVER_API_URL= 'http://localhost:3002/api'
+
+type FetchMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
 //Fetch Wrapper
 export async function makeApiCall<TResponse>(
   method: FetchMethod, 
   endpoint: string, 
-  data: unknown, 
-  errorMessage: string
+  errorMessage: string,
+  data?: unknown, 
 ): Promise<TResponse> {
   const url = `${SERVER_API_URL}${endpoint}`
   
@@ -19,21 +22,15 @@ export async function makeApiCall<TResponse>(
     headers,
     credentials: 'include', // Include http-only cookies
   };
-  if (method !== 'GET') {
+  if (method !== 'GET' && data !== undefined) {
     requestOptions.body = JSON.stringify(data)
   }
   
   let response = await fetch(url, requestOptions)
   if(response.status === 401) {
     const errorData = await response.json();
-    if(errorData.message === 'Session has expired. Please log in again.') {
-      const refreshResponse = await fetch(
-        `${SERVER_API_URL}/auth/refresh`, 
-        { 
-          method: 'POST', 
-          credentials: 'include' 
-        }
-      );
+    if(errorData.message === 'Session has expired') {
+      const refreshResponse = await tryTokenRefresh(SERVER_API_URL)
       if (!refreshResponse.ok) {
         throw new Error('Unable to refresh tokens');
       }
@@ -42,6 +39,10 @@ export async function makeApiCall<TResponse>(
   }
 
   const responseJSON = await response.json().catch(() => null)
+
+  if (response.status === 204) {
+    return undefined as TResponse
+  }
 
   if (!response.ok) {
     throw new Error(responseJSON?.message || errorMessage)

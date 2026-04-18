@@ -16,6 +16,7 @@ import AllCreatedBoardsPage from './AllCreatedBoardsPage.tsx'
 import AllCreatedEventsPage from './AllCreatedEventsPage.tsx'
 import EventMainPage from './EventMainPage.tsx'
 import EventTeamPage from './EventTeamPage.tsx'
+import JoinEventPage from './JoinEventPage.tsx'
 
 const router = createBrowserRouter(
   [
@@ -112,9 +113,24 @@ const router = createBrowserRouter(
 
             const teamPageEventData = await expressApi.events.getEventSingleTeamData({ eventId, teamId })
 
-            return {teamPageEventData }
+            return { teamPageEventData }
           },
           element: <EventTeamPage />
+        },
+        {
+          path: 'join/:joinToken',
+          loader: async ({ params }) => {
+            const joinToken = params.joinToken
+
+            if(!joinToken) {
+              throw new Error("Join Token is missing")
+            }
+
+            const joinEventPageData = await expressApi.participantAuth.getJoinEventPageData(joinToken)
+
+            return { joinEventPageData }
+          },
+          element: <JoinEventPage />
         }
       ]
     }

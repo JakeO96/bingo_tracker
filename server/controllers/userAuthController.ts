@@ -18,19 +18,18 @@ const ONE_WEEK = 7 * 24 * 60 * 60 * 1_000
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
   if ( !email || !username || !password ) {
-    res.status(HttpStatusCode.VALIDATION_ERROR);
+    res.status(HttpStatusCode.BAD_REQUEST);
     throw new Error("Missing required fields")
   }
   const userAlreadyExists = await User.findOne({ email });
   if (userAlreadyExists) {
-    res.status(HttpStatusCode.VALIDATION_ERROR);
+    res.status(HttpStatusCode.BAD_REQUEST);
     throw new Error("User already exists")
   }
 
   const saltRounds = process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS, 10) : 10;
   try {
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     
     const user = new User({
       email: email,
@@ -133,7 +132,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie('userToken')
     res.clearCookie('userRefreshToken')
     
-    res.status(HttpStatusCode.SUCCESS).json({ message: "the logout happened" })
+    res.sendStatus(HttpStatusCode.NO_CONTENT)
   }
   else {
     res.status(HttpStatusCode.UNAUTHORIZED)
@@ -200,7 +199,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
     // Set the JWT and refresh token in HttpOnly cookies then success
     res.cookie('userToken', accessToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: TWO_HOURS});
     res.cookie('userRefreshToken', newRefreshToken, { httpOnly: true, sameSite:  "none", secure: true, maxAge: ONE_WEEK});   
-    res.status(HttpStatusCode.SUCCESS).json({ accessToken, refreshToken: newRefreshToken });
+    res.sendStatus(HttpStatusCode.NO_CONTENT)
   } catch (err: any) {
       res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized from validateToken', error: err })
       return

@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import type { EventData, EventFormData } from "../shared/types/events.ts"
+import type { EventFormData } from "../shared/types/events.ts"
 import { formInputStyles, PlainFormField } from "./FormFields";
-import type { BoardData, IBoardSchema } from "../shared/types/bingo";
+import type { BoardData } from "../shared/types/bingo";
 import { expressApi } from "./express-api";
 import EventBoardSelector from "./EventBoardSelector";
 import EventTeamsEditor from "./EventTeamsEditor";
 import type { ListRecordSummary } from "./ListAllFetchedRecords.tsx";
+import { cn } from "./utils.ts";
+import type { CreateEventRequest } from "../shared/types/express-api/events.ts";
 
 type EventBuilderProps = {
   event: EventFormData;
-  apiFunction: (event: EventData) => void;
+  apiFunction: (createEventData: CreateEventRequest) => void;
   availableBoards: ListRecordSummary[];
   preSelectedBoard: BoardData | null;
 }
@@ -46,13 +48,11 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
     try {
       setIsLoadingBoard(true)
 
-      const boardRecord: IBoardSchema = await expressApi.boards.getBoard(boardId) as IBoardSchema
-      const board = {
-        title: boardRecord.title,
-        tiles: boardRecord.tiles
-      }
-
-      setSelectedBoard(board)
+      const { board } = await expressApi.boards.getBoard(boardId)
+      setSelectedBoard({
+        title: board.title,
+        tiles: board.tiles
+      })
     } catch(error) {
       console.error("Failed to load selected board: ", error)
       setSelectedBoard(null)
@@ -67,25 +67,21 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
     console.log(eventDraft)
     const startAt = new Date(`${eventDraft.startDate}T${eventDraft.startTime}`)
     const endAt = new Date(`${eventDraft.endDate}T${eventDraft.endTime}`)
-    const event: EventData = {
+    const createEventData: CreateEventRequest = {
       title: eventDraft.title,
       description: eventDraft.description,
       sourceBoardId: eventDraft.sourceBoardId,
-      boardSnapshot: null,
       startAt: startAt.toISOString(),
       endAt: endAt.toISOString(),
-      participants: [],
       teams: eventDraft.teams,
       settings: {
-        approvalMode: "admin_only",
-        joinMode: 'open_link',
-        visibility: "private",
-        globalPointsLeaderBoard: true,
-        interTeamBoardAccess: false
+        requirePasswordToJoin: eventDraft.requirePasswordToJoin,
       },
-      status: 'draft'
+      inviteData: {
+        joinPassword: eventDraft.requirePasswordToJoin ? eventDraft.joinPassword.trim() : null,
+      }
     }
-    apiFunction(event)
+    apiFunction(createEventData)
   }
 
   return (
@@ -196,6 +192,39 @@ export default function Eventbuilder({ event, apiFunction, availableBoards, preS
             }))
           }
         />
+
+        <div className="flex items-center">
+          <span>Require Password To Join</span>
+          <button
+            type='button'
+            onClick={() => setEventDraft(prev => ({ 
+              ...prev, 
+              requirePasswordToJoin: !prev.requirePasswordToJoin,
+              joinPassword: ''
+            }))}
+            className={cn(
+              "w-12 h-6 rounded-full transition bg-gray-300 ml-2",
+              eventDraft.requirePasswordToJoin && "bg-green-500"
+            )}
+          >
+            <div
+              className={cn(
+                "h-6 w-6 bg-white rounded-full transition transform translate-x-0",
+                eventDraft.requirePasswordToJoin && "translate-x-6"
+              )}
+            />
+          </button>
+        </div>
+
+          {eventDraft.requirePasswordToJoin && (
+            <PlainFormField
+              name='joinPassword'
+              type="password"
+              placeholder='Enter Join Password'
+              value={eventDraft.joinPassword }
+              onChange={onInputChange}
+            />
+          )}
 
         
         <div className="flex justify-center items-center w-full gap-2">

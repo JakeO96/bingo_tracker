@@ -72,7 +72,7 @@ export const participantSchema = new Schema(
       type: [goalSubmissionSchema],
       default: []
     },
-    recoverCodeHash: {
+    recoveryCodeHash: {
       type: String,
       required: true
     },

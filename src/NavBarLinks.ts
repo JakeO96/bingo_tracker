@@ -75,7 +75,6 @@ export const eventAdminActions: NavItem[] = [
         label: "View All Submissions",
         to: "event/:id/all-submissions"
       },
-
     ]
   }
 ]

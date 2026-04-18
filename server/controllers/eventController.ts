@@ -9,7 +9,9 @@ import dotenv from 'dotenv-safe';
 import mongoose from 'mongoose'
 import { createInitialTeamProgress } from '../utils/create-event'
 import { EventBoardSnapshot } from '../../shared/types/events'
-dotenv.config();
+import bcrypt from 'bcrypt'
+import crypto from 'crypto'
+dotenv.config()
 
 
 interface RequestWithUser extends Request {
@@ -21,51 +23,81 @@ interface RequestWithUser extends Request {
 //@route POST /api/event/create-event
 //@access private
 const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
-  const eventData = req.body.draftEvent
+  const createEventData = req.body
 
   console.log('eventData vvvvv in createEvent')
-  console.log(eventData)
+  console.log(createEventData)
   if (req.user) {
     const ownerRecord = await User.findById(req.user.id)
     if (!ownerRecord) {
       console.log('hit in no ownerRecord')
-      res.status(HttpStatusCode.VALIDATION_ERROR)
+      res.status(HttpStatusCode.BAD_REQUEST)
       throw new Error("Some user does not exist")
     }
 
-    if (!mongoose.Types.ObjectId.isValid(eventData.sourceBoardId)) {
+    if (!mongoose.Types.ObjectId.isValid(createEventData.sourceBoardId)) {
       console.log('hit in sourceBoardIf validation')
-      res.status(HttpStatusCode.VALIDATION_ERROR)
+      res.status(HttpStatusCode.BAD_REQUEST)
       throw new Error("Invalid board ID format")
     }
     
-    const sourceBoard = await Board.findById(eventData.sourceBoardId)
-    console.log('hit in no source board record')
+    const sourceBoard = await Board.findById(createEventData.sourceBoardId)
     if (!sourceBoard) {
-      res.status(HttpStatusCode.VALIDATION_ERROR)
+      console.log('hit in no source board record')
+      res.status(HttpStatusCode.BAD_REQUEST)
       throw new Error("The source board does not exist")
     }
 
-    const startAtDate = new Date(eventData.startAt)
-    const endAtDate = new Date(eventData.endAt)
+    const startAtDate = new Date(createEventData.startAt)
+    const endAtDate = new Date(createEventData.endAt)
     const boardSnapshot: EventBoardSnapshot = {
-        boardId: eventData.sourceBoardId,
+        boardId: createEventData.sourceBoardId,
         boardTitle: sourceBoard.title,
         boardTiles: sourceBoard.tiles
       }
-    const teamsWithInitializedProgress = createInitialTeamProgress(boardSnapshot, eventData.teams)
+    const teamsWithInitializedProgress = createInitialTeamProgress(boardSnapshot, createEventData.teams)
+    
+    if (createEventData.settings.requirePasswordToJoin && !createEventData.inviteData.joinPassword) {
+      res.status(HttpStatusCode.BAD_REQUEST)
+      throw new Error("Password is required when requirePasswordToJoin is true")
+    }
+
+    let hashedJoinPassword: string | null = null
+    if (createEventData.settings.requirePasswordToJoin) {
+      const saltRounds = process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS, 10) : 10
+      hashedJoinPassword = await bcrypt.hash(createEventData.inviteData.joinPassword, saltRounds)
+    }
+
+    const settings = {
+      approvalMode: "admin_only",
+      joinMode: "general_link",
+      visibility: "private",
+      isJoinOpen: false,
+      requirePasswordToJoin: createEventData.settings.requirePasswordToJoin,
+      globalPointsLeaderBoard: true,
+      interTeamBoardAccess: false
+    }
+
+    const inviteData = {
+        joinPasswordHash: hashedJoinPassword,
+        generalJoinToken: crypto.randomBytes(12).toString('base64url'),
+        teamJoinTokens: null,
+        lastRotatedAt: null
+    }
 
     const event = new Event({
       ownerId: ownerRecord._id,
-      title: eventData.title,
-      description: eventData.description,
+      title: createEventData.title,
+      description: createEventData.description,
       sourceBoardId: sourceBoard._id,
       boardSnapshot: boardSnapshot,
       startAt: startAtDate,
       endAt: endAtDate,
+      participants: [],
       teams: teamsWithInitializedProgress,
-      settings: eventData.settings,
-      status: eventData.status
+      settings,
+      inviteData,
+      status: 'draft'
     })
 
     try {
@@ -76,6 +108,7 @@ const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, ne
       return next(err)
     }
 
+    console.log('before successful event creation return)')
     await User.findByIdAndUpdate(ownerRecord.id, { $push: { eventsOwned: event._id }})
     res.status(HttpStatusCode.RECORD_CREATED).json({ eventId: event._id.toString() })
   }
@@ -104,11 +137,11 @@ const getAllEventSummariesForUser = asyncHandler( async (req: RequestWithUser, r
 
     console.log('events below vvvvvvvvvvv')
     console.log(events)
-    const eventSummaries = events.map((board) => ({
-      id: board._id.toString(),
-      title: board.title,
-      updatedAt: board.updatedAt,
-      createdAt: board.createdAt
+    const eventSummaries = events.map((event) => ({
+      id: event._id.toString(),
+      title: event.title,
+      updatedAt: event.updatedAt,
+      createdAt: event.createdAt
     }))
     console.log('eventSummaries below vvvvvvvvv')
     console.log(eventSummaries)

@@ -13,7 +13,7 @@ export const generateRecoveryPhrase = (wordCount = 3): string => {
   return words.join("-")
 }
 
-export async function hasRecoveryPhrase(recoveryPhrase: string): Promise<string> {
+export async function hashRecoveryPhrase(recoveryPhrase: string): Promise<string> {
   const saltRounds = process.env.SALT_ROUNDS
     ? parseInt(process.env.SALT_ROUNDS, 10)
     : 10

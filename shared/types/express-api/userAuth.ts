@@ -17,7 +17,3 @@ export interface LogInRequest {
 export interface LogInResponse {
   username: string,
 }
-
-export interface LogOutResponse {
-  message: string;
-}

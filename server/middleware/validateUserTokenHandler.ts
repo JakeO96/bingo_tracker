@@ -45,7 +45,7 @@ const validateUserTokenCallback = async (req: RequestWithUser, res: Response, ne
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     if (err instanceof TokenExpiredError) {
-      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Session has expired. Please log in again.'})
+      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Session has expired' })
       return
     }
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized from validateToken' })

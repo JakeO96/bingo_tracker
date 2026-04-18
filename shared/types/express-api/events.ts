@@ -1,14 +1,29 @@
-import type { EventSummary, IEventSchema, TeamPageData } from "../events";
+import type { EventSummary, EventTeamData, IEventSchema, TeamPageData } from "../events";
+
+export interface CreateEventRequest {
+  title: string;
+  description: string;
+  sourceBoardId: string;
+  startAt: string;
+  endAt: string;
+  teams: EventTeamData[];
+  settings: {
+    requirePasswordToJoin: boolean;
+  }
+  inviteData: {
+    joinPassword: string | null;
+  }
+}
 
 export interface CreateEventResponse {
   eventId: string;
 }
 
 export interface GetEventResponse {
-  event: IEventSchema;
+  eventData: IEventSchema;
 }
 
-export interface GetAllEventSummariesForUser {
+export interface GetAllEventSummariesForUserResponse {
   eventSummaries: EventSummary[];
 }
 

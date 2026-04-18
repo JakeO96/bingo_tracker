@@ -1,9 +1,5 @@
-import type { BoardData, BoardSummary, BoardTileData, IBoardSchema } from '../bingo'
+import type { BoardData, BoardSummary, IBoardSchema } from '../bingo'
 
-export interface CreateBoardRequest {
-  title: string;
-  tiles: BoardTileData[]
-}
 export interface CreateBoardResponse {
   boardId: string;
 }
@@ -20,10 +16,7 @@ export interface GetAllBoardSummariesForUserResponse {
   boardSummaries: BoardSummary[]
 }
 
-export interface UpdateBoardResponse {
-  message: string;
-}
 export interface UpdateBoardRequest {
-  id: string;
-  updateData: BoardData;
+  boardId: string;
+  updates: BoardData;
 }

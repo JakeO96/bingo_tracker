@@ -18,11 +18,10 @@ interface RequestWithUser extends Request {
 //@access private
 const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
   const boardData = req.body
-  console.log(boardData.title + '``````````````````````````````````````````````````````')
   if (req.user) {
     const ownerRecord = await User.findById(req.user.id );
     if (!ownerRecord) {
-      res.status(HttpStatusCode.VALIDATION_ERROR)
+      res.status(HttpStatusCode.BAD_REQUEST)
       throw new Error("Some user does not exist")
     }
     const board = new Board({
@@ -52,8 +51,7 @@ const getBoard = asyncHandler( async (req: Request, res: Response) => {
   const board = await Board.findById(req.params.id);
   console.log(`$$$firing in boardController getBoard, board id is ${req.params.id}`)
   if(board) {
-    res.status(HttpStatusCode.SUCCESS).json(board);
-    console.log(board.toJSON())
+    res.status(HttpStatusCode.SUCCESS).json({ board });
   } 
   else {
     res.status(HttpStatusCode.NOT_FOUND);
@@ -108,16 +106,12 @@ const getAllBoardSummariesForUser = asyncHandler( async (req: RequestWithUser, r
       .sort({ updatedAt: -1})
       .lean()
 
-    console.log('boards below vvvvvvvvvvv')
-    console.log(boards)
     const boardSummaries = boards.map((board) => ({
       id: board._id.toString(),
       title: board.title,
       updatedAt: board.updatedAt,
       createdAt: board.createdAt
     }))
-    console.log('boardSummaries below vvvvvvvvv')
-    console.log(boardSummaries)
 
     res.status(200).json(boardSummaries)
   } else {
@@ -131,7 +125,7 @@ const getAllBoardSummariesForUser = asyncHandler( async (req: RequestWithUser, r
 //@access private
 const updateBoard = asyncHandler( async (req: RequestWithUser, res: Response) => {
   const id = req.params.id
-  const updates = req.body.updateData
+  const updates = req.body
 
   console.log('inside board controller upateBoard, id below')
   console.log(id)
@@ -151,7 +145,7 @@ const updateBoard = asyncHandler( async (req: RequestWithUser, res: Response) =>
     throw new Error("Board not found")
   }
   console.log('firing right before returning successful update')
-  res.status(200).json({message: 'board updated'})
+  res.sendStatus(HttpStatusCode.NO_CONTENT)
 })
 
 export { createBoard, getBoard, getAllBoardsForUser, getAllBoardSummariesForUser, updateBoard }

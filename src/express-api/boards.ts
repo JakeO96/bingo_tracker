@@ -1,20 +1,25 @@
 import { makeApiCall } from "./client"
-import type { CreateBoardRequest, CreateBoardResponse, GetAllBoardsForUserResponse, GetAllBoardSummariesForUserResponse, GetBoardResponse, UpdateBoardRequest, UpdateBoardResponse} from '../../shared/types/api/boards'
+import type { 
+  CreateBoardResponse, 
+  GetAllBoardsForUserResponse, 
+  GetAllBoardSummariesForUserResponse, 
+  GetBoardResponse, 
+  UpdateBoardRequest } from '../../shared/types/express-api/boards'
+import type { BoardData } from "../../shared/types/bingo"
 
 // Create a new Bingo Board
-const createBoard = async (data: CreateBoardRequest ): Promise<CreateBoardResponse> =>
+const createBoard = async (data: BoardData ): Promise<CreateBoardResponse> =>
   makeApiCall<CreateBoardResponse>(
     'POST', 
     '/board/create-board', 
-    data,
-    "Failed to create board"    
+    "Failed to create board",
+    data   
   )
 
 const getBoard = async (id: string): Promise<GetBoardResponse> =>
 makeApiCall<GetBoardResponse>(
   'GET',
   `/board/${id}`,
-  {},
   "Failed to get board"
 )
 
@@ -22,7 +27,6 @@ const getAllBoardsForUser = async (): Promise<GetAllBoardsForUserResponse> =>
   makeApiCall<GetAllBoardsForUserResponse>(
     'GET', 
     '/board/getAllBoardsForUser',
-    {},
     "Failed to get user boards"  
   )
 
@@ -30,16 +34,15 @@ const getAllBoardSummariesForUser = async (): Promise<GetAllBoardSummariesForUse
   makeApiCall<GetAllBoardSummariesForUserResponse>(
     'GET',
     '/board/getAllBoardSummariesForUser',
-    {},
     "Failed to get user board summaries"
   )
 
-const updateBoard = async ({ id, updateData  }: UpdateBoardRequest): Promise<UpdateBoardResponse> =>
-  makeApiCall<UpdateBoardResponse>(
+const updateBoard = async ({ boardId, updates  }: UpdateBoardRequest): Promise<void> =>
+  makeApiCall<void>(
     'PATCH',
-    `/board/${id}`,
-    { updateData },
-    "Failed to update board"
+    `/board/${boardId}`,
+    "Failed to update board",
+    updates,
   )
 
 export const boardsApi = {
