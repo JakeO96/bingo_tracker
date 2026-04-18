@@ -63,6 +63,9 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
   },
-  "include": ["./**/*.ts", "../shared/game-utils.ts"],        // Include all TypeScript files in src and sub-directories
+  "ts-node": {
+    "files": true
+  },
+  "include": ["./**/*.ts", "./types/**/*.d.ts"],        // Include all TypeScript files in src and sub-directories
   "exclude": ["node_modules", ".env", ".env.example"],  
 }

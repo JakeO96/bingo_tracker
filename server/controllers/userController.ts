@@ -3,12 +3,7 @@ import { HttpStatusCode } from '../constants';
 import asyncHandler from 'express-async-handler';
 import User from "../models/userModel";
 import bcrypt from 'bcrypt';
-import type { ActiveUser } from '../models/userModel';
 //import mongoose from 'mongoose';
-
-interface RequestWithUser extends Request {
-  user?: ActiveUser;
-}
 
 //@desc Get a single User record
 //@route GET /api/user/:id
@@ -118,6 +113,6 @@ export const deleteUser = asyncHandler( async (req: Request, res: Response) => {
 //@desc The current user's info
 //@route GET /api/auth/current-user
 //@access private
-export const currentUser = asyncHandler(async (req: RequestWithUser, res: Response) => {
+export const currentUser = asyncHandler(async (req: Request, res: Response) => {
   res.status(HttpStatusCode.SUCCESS).json(req.user); 
 });

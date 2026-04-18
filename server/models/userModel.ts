@@ -1,9 +1,10 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { Document } from "mongoose";
 import { IBoardSchema } from "../../shared/types/bingo";
 import { IEventSchema } from "../../shared/types/events";
 
 export interface IUser extends Document {
+  _id: Types.ObjectId;
   email: string;
   username: string;
   password: string;
@@ -19,9 +20,6 @@ export interface IUser extends Document {
     startTime: Date;
     endTime: Date | null;
   };
-}
-export interface ActiveUser extends IUser {
-  id?: string
 }
 
 const userSchema = new mongoose.Schema(

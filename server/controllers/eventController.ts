@@ -4,7 +4,6 @@ import asyncHandler from 'express-async-handler'
 import Board from '../models/boardModel'
 import User from '../models/userModel'
 import Event from '../models/eventModel'
-import type { ActiveUser } from '../models/userModel'
 import dotenv from 'dotenv-safe';
 import mongoose from 'mongoose'
 import { createInitialTeamProgress } from '../utils/create-event'
@@ -13,16 +12,11 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 dotenv.config()
 
-
-interface RequestWithUser extends Request {
-  user?: ActiveUser;
-}
-
 //@desc Create a Board
 // record
 //@route POST /api/event/create-event
 //@access private
-const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const createEvent = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
   const createEventData = req.body
 
   console.log('eventData vvvvv in createEvent')
@@ -114,7 +108,7 @@ const createEvent = asyncHandler( async (req: RequestWithUser, res: Response, ne
   }
 })
 
-const getEvent = asyncHandler( async (req: RequestWithUser, res: Response) => {
+const getEvent = asyncHandler( async (req: Request, res: Response) => {
   const event = await Event.findById(req.params.id);
   console.log(`$$$firing in eventController getEvent, event id is ${req.params.id}`)
   if(event) {
@@ -127,7 +121,7 @@ const getEvent = asyncHandler( async (req: RequestWithUser, res: Response) => {
   }
 })
 
-const getAllEventSummariesForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
+const getAllEventSummariesForUser = asyncHandler( async (req: Request, res: Response) => {
   if (req.user) {
     console.log('Firing in getAllBoardSummaries')
     const events = await Event.find({ ownerId: req.user.id })
@@ -153,7 +147,7 @@ const getAllEventSummariesForUser = asyncHandler( async (req: RequestWithUser, r
   }
 })
 
-const getEventSingleTeamData = asyncHandler( async (req: RequestWithUser, res: Response) => {
+const getEventSingleTeamData = asyncHandler( async (req: Request, res: Response) => {
   const eventId = req.params.eventId
   const teamId = req.params.teamId
 

@@ -1,21 +1,23 @@
-/* eslint-disable prefer-const */
-import { Request, Response, NextFunction } from 'express';
-import { HttpStatusCode } from '../constants'
 import asyncHandler from 'express-async-handler'
-import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express'
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { HttpStatusCode } from '../constants';
 import User from '../models/userModel'
 
-const validateUserTokenCallback = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.userToken
+export const optionalValidateUserToken = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies?.userToken
+
   if (!token) {
-    res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized '})
-    return
+    req.user = undefined
+    return next()
   }
+
   const secret = process.env.JWT_USER_SECRET
   if (!secret) {
     res.status(HttpStatusCode.SERVER_ERROR).json({ message: 'Server misconfiguration'})
     return
   }
+  
   try {
     const decoded = await new Promise<JwtPayload>((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,17 +40,8 @@ const validateUserTokenCallback = async (req: Request, res: Response, next: Next
     }
     res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Invalid session from validateToken' })
     return
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    if (err instanceof TokenExpiredError) {
-      res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Session has expired' })
-      return
-    }
-    res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'User not authorized from validateToken' })
-    return
+  } catch {
+    req.user = undefined
+    next()
   }
-}
-
-const validateUserToken = asyncHandler(validateUserTokenCallback)
-
-export { validateUserToken }
+})

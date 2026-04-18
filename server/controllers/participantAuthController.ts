@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { HttpStatusCode } from '../constants'
 import asyncHandler from 'express-async-handler'
-import { ActiveUser } from "../models/userModel";
 import Participant from "../models/participantModel"
 import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,11 +14,7 @@ import bcrypt from 'bcrypt'
 //const TWO_HOURS = 2 * 60 * 60 * 1_000
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1_000
 
-interface RequestWithUser extends Request {
-  user?: ActiveUser;
-}
-
-export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Response) => {
+export const joinEvent = asyncHandler( async (req: Request, res: Response) => {
   const { displayName, joinPassword, joinToken } = req.body
   console.log(displayName, joinPassword, joinToken)
 
@@ -38,6 +33,28 @@ export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Respons
   if (!event) {
     res.status(HttpStatusCode.NOT_FOUND).json({ message: "Invalid or expired join link"})
     return
+  }
+  if (req.participant?.participantId) {
+    const existingParticipant = await Participant.findById(req.participant.participantId)
+
+    if (
+      existingParticipant &&
+      existingParticipant.eventId.toString() === event._id.toString()
+    ) {
+      res.status(HttpStatusCode.CONFLICT).json({ message: "You have already joined this event" })
+      return
+    }
+  }
+  if (req.user?.id) {
+    const existingForUser = await Participant.findOne({
+      eventId: event._id,
+      userId: req.user.id
+    })
+
+    if (existingForUser) {
+      res.status(HttpStatusCode.CONFLICT).json({ message: "You have already joined this event" })
+      return
+    }
   }
   /*if(!event.settings.isJoinOpen || event.status === 'ended' || event.status === 'draft') {
     res.status(HttpStatusCode.FORBIDDEN).json({ message: "Event is currently closed to new participants "})
@@ -110,7 +127,7 @@ export const joinEvent = asyncHandler( async (req: RequestWithUser, res: Respons
       participant: {
         participantId: participant.id,
         eventId: event._id,
-        essionId: session.sessionId
+        sessionId: session.sessionId
       }
     },
     accessSecret,

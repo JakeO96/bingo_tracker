@@ -3,22 +3,10 @@ import asyncHandler from "express-async-handler"
 import { HttpStatusCode } from "../constants";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { ParticipantSession } from "../../shared/types/participants";
-
-interface AuthenticatedParticipant {
-  participantId: string;
-  eventId: string;
-  role: string;
-  teamId: string | null;
-  userId: string | null;
-  sessionId: string;
-}
-
-interface RequestWithParticipant extends Request {
-  participant?: AuthenticatedParticipant;
-}
+import Participant from '../models/participantModel'
 
 const validateParticipantTokenCallback = async (
-  req: RequestWithParticipant,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -53,7 +41,7 @@ const validateParticipantTokenCallback = async (
       return
     }
 
-    const participant = await participantId.findOne({ id: participantId, eventId })
+    const participant = await Participant.findOne({ id: participantId, eventId })
 
     if (!participant) {
       res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Participant not found" })
@@ -76,7 +64,7 @@ const validateParticipantTokenCallback = async (
 
     req.participant = {
       participantId: participant.id,
-      eventId: participant.eventId,
+      eventId: participant.eventId.toString(),
       role: participant.role,
       teamId: participant.teamId ?? null,
       userId: participant.userId ? participant.userId.toString() : null,

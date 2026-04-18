@@ -3,20 +3,14 @@ import { HttpStatusCode } from '../constants'
 import asyncHandler from 'express-async-handler'
 import Board from '../models/boardModel'
 import User from '../models/userModel'
-import type { ActiveUser } from '../models/userModel'
 import dotenv from 'dotenv-safe';
 dotenv.config();
-
-
-interface RequestWithUser extends Request {
-  user?: ActiveUser;
-}
 
 //@desc Create a Board
 // record
 //@route POST /api/board/create-board
 //@access private
-const createBoard = asyncHandler( async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const createBoard = asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
   const boardData = req.body
   if (req.user) {
     const ownerRecord = await User.findById(req.user.id );
@@ -90,7 +84,7 @@ const deleteGame = asyncHandler( async (req: RequestWithUser, res: Response) => 
 //@desc Get all Board records for a User
 //@route GET /api/board/getAllBoardsForUser
 //@access private
-const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
+const getAllBoardsForUser = asyncHandler( async (req: Request, res: Response) => {
   if (req.user) {
     console.log(`inside getAllBoardsForUser ownerID is ${req.user.id}`)
     const allUserOwnedBoards = await Board.find({ ownerId: req.user.id}).exec()
@@ -98,7 +92,7 @@ const getAllBoardsForUser = asyncHandler( async (req: RequestWithUser, res: Resp
   }
 })
 
-const getAllBoardSummariesForUser = asyncHandler( async (req: RequestWithUser, res: Response) => {
+const getAllBoardSummariesForUser = asyncHandler( async (req: Request, res: Response) => {
   if (req.user) {
     console.log('Firing in getAllBoardSummaries')
     const boards = await Board.find({ ownerId: req.user.id })
@@ -123,7 +117,7 @@ const getAllBoardSummariesForUser = asyncHandler( async (req: RequestWithUser, r
 //@desc Update a specific board
 //@route GET /api/board/updateBoard
 //@access private
-const updateBoard = asyncHandler( async (req: RequestWithUser, res: Response) => {
+const updateBoard = asyncHandler( async (req: Request, res: Response) => {
   const id = req.params.id
   const updates = req.body
 
